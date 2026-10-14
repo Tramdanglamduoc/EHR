@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trâm's Health Record</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&family=Be+Vietnam+Pro:wght@400;500;600&display=swap">
+<style>
+/* Layout: a clinic-chart look — a pale blue record header, then sticky section index beside stacked record panels. */
+:root {
+  --bg: #f2f7fc;
+  --surface: #ffffff;
+  --ink: #0f2a44;
+  --muted: #5b7491;
+  --line: #d4e3f2;
+  --soft: #e1eefb;
+  --accent: #1d6bcf;
+  --accent-ink: #ffffff;
+  --band: linear-gradient(180deg, #d9eafb 0%, #eef5fd 100%);
+  --warn: #b45309;
+  --warn-soft: #fdf0dd;
+  --crit: #b42318;
+  --crit-soft: #fde4e1;
+  --ok: #0f7a5a;
+  --ok-soft: #dcf3ea;
+  --display: "Lexend", "PingFang TC", "Hiragino Sans", "Apple SD Gothic Neo", "Microsoft JhengHei", "Malgun Gothic", system-ui, sans-serif;
+  --body: "Be Vietnam Pro", "PingFang TC", "Hiragino Sans", "Apple SD Gothic Neo", "Noto Sans CJK TC", "Microsoft JhengHei", "Malgun Gothic", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1826; --surface: #10233a; --ink: #e3eef9; --muted: #8ea8c5; --line: #21405f; --soft: #163352;
+    --accent: #6aaeff; --accent-ink: #06182b; --band: linear-gradient(180deg, #12304f 0%, #0b1826 100%);
+    --warn: #f3b263; --warn-soft: #3a2a12; --crit: #ff8a7d; --crit-soft: #3d1a17; --ok: #5fd3a8; --ok-soft: #12352a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b1826; --surface: #10233a; --ink: #e3eef9; --muted: #8ea8c5; --line: #21405f; --soft: #163352;
+  --accent: #6aaeff; --accent-ink: #06182b; --band: linear-gradient(180deg, #12304f 0%, #0b1826 100%);
+  --warn: #f3b263; --warn-soft: #3a2a12; --crit: #ff8a7d; --crit-soft: #3d1a17; --ok: #5fd3a8; --ok-soft: #12352a;
+  color-scheme: dark;
+}
+:lang(zh-Hans) { --body: "Be Vietnam Pro", "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif; }
+:lang(ja) { --body: "Be Vietnam Pro", "Hiragino Sans", "Noto Sans CJK JP", "Yu Gothic", "Meiryo", system-ui, sans-serif; }
+:lang(ko) { --body: "Be Vietnam Pro", "Apple SD Gothic Neo", "Noto Sans CJK KR", "Malgun Gothic", system-ui, sans-serif; }
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.55; }
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.band { background: var(--band); border-bottom: 1px solid var(--line); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.band .wrap { padding-block: 28px 24px; display: grid; gap: 22px; }
+
+.topline { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.chart-id { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-variant-numeric: tabular-nums; }
+.langs { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; }
+.langs button { border: 0; background: transparent; padding: 5px 12px; border-radius: 999px; cursor: pointer; font-size: 13px; color: var(--muted); }
+.langs button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+
+.identity { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
+.seal { width: 64px; height: 64px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--surface); border: 2px solid var(--accent); color: var(--accent); font-family: var(--display); font-weight: 600; font-size: 22px; }
+.identity > div { min-width: 0; }
+h1 { font-family: var(--display); font-weight: 600; font-size: clamp(24px, 4vw, 34px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.tagline { margin: 4px 0 0; color: var(--muted); }
+.who { margin: 6px 0 0; font-weight: 500; }
+
+.summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; min-width: 0; }
+.tile h3 { margin: 0 0 4px; font-size: 11.5px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.tile p { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.tile.alert { border-color: var(--crit); background: var(--crit-soft); }
+.tile.alert h3, .tile.alert p { color: var(--crit); }
+.tile .blood { font-family: var(--display); font-size: 26px; line-height: 1.1; color: var(--accent); }
+
+.layout { display: grid; grid-template-columns: 232px minmax(0, 1fr); gap: 28px; padding-block: 28px 48px; }
+nav.index { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); align-self: start; max-height: calc(100vh - 32px); overflow-y: auto; display: grid; gap: 16px; }
+.index h4 { margin: 0 0 4px; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.index ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.index a { display: flex; justify-content: space-between; gap: 8px; padding: 5px 10px; border-radius: 8px; color: var(--ink); text-decoration: none; font-size: 14px; }
+.index a:hover { background: var(--soft); }
+.index a span { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+.toolbar small { color: var(--muted); font-variant-numeric: tabular-nums; }
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 7px 14px; border-radius: 9px; cursor: pointer; font-weight: 500; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.small { padding: 4px 10px; font-size: 13px; }
+.btn.danger { color: var(--crit); }
+
+.groups { display: grid; gap: 30px; }
+.group-title { font-family: var(--display); font-size: 13px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px; padding-bottom: 6px; border-bottom: 2px solid var(--soft); }
+.group-body { display: grid; gap: 14px; }
+section.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; scroll-margin-top: 16px; min-width: 0; }
+.panel header { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+.panel h2 { font-family: var(--display); font-weight: 500; font-size: 18px; margin: 0; }
+.panel header span { font-size: 12px; color: var(--muted); }
+
+dl.fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; margin: 0; }
+dl.fields.wide { grid-template-columns: 1fr; }
+.field { min-width: 0; border-bottom: 1px dashed var(--line); padding-bottom: 6px; }
+.field dt { font-size: 12.5px; color: var(--muted); }
+.field dd { margin: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+.field dd.unset { color: var(--muted); font-style: italic; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-weight: 500; font-size: 12.5px; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; overflow-wrap: anywhere; }
+tr:last-child td { border-bottom: 0; }
+.empty { color: var(--muted); font-style: italic; margin: 4px 0; }
+.chip { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 12.5px; background: var(--soft); }
+.chip.crit { background: var(--crit-soft); color: var(--crit); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.ok { background: var(--ok-soft); color: var(--ok); }
+
+input.cell, textarea.cell { width: 100%; min-width: 120px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); }
+textarea.cell { min-height: 110px; resize: vertical; }
+input.cell:focus, textarea.cell:focus { border-color: var(--accent); outline: none; }
+.add-row { margin-top: 10px; }
+
+details.backup { margin-top: 30px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; }
+details.backup summary { cursor: pointer; font-weight: 500; }
+.backup-body { display: grid; gap: 10px; margin-top: 12px; }
+.backup-body textarea { width: 100%; min-height: 120px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
+.backup-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.msg { font-size: 13px; color: var(--muted); }
+.msg.error { color: var(--crit); }
+footer { color: var(--muted); font-size: 13px; margin-top: 22px; max-width: 70ch; }
+
+@media (max-width: 860px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  nav.index { position: static; max-height: none; display: flex; overflow-x: auto; gap: 6px; padding-bottom: 4px; }
+  .index h4 { display: none; }
+  .index ul { display: contents; }
+  .index a { white-space: nowrap; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; }
+  .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  dl.fields { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+</style>
+</head>
+<body>
+<div class="band">
+  <div class="wrap">
+    <div class="topline">
+      <span class="chart-id">PHR · <span id="rec-id"></span></span>
+      <div class="langs" id="langs" role="group" aria-label="Language"></div>
+    </div>
+    <div class="identity">
+      <div class="seal" id="seal"></div>
+      <div>
+        <h1 id="t-title"></h1>
+        <p class="who" id="who"></p>
+        <p class="tagline" id="t-tagline"></p>
+      </div>
+    </div>
+    <div class="summary" id="summary" aria-live="polite"></div>
+  </div>
+</div>
+
+<div class="wrap layout">
+  <nav class="index" id="index"></nav>
+  <main>
+    <div class="toolbar">
+      <small id="updated"></small>
+      <button class="btn primary" id="mode-btn" type="button"></button>
+    </div>
+    <div class="groups" id="groups"></div>
+
+    <details class="backup">
+      <summary id="t-backup"></summary>
+      <div class="backup-body">
+        <div class="backup-row">
+          <button class="btn" id="copy-btn" type="button"></button>
+          <span class="msg" id="copy-msg"></span>
+        </div>
+        <label for="import-box" class="msg" id="t-import"></label>
+        <textarea id="import-box" spellcheck="false"></textarea>
+        <div class="backup-row">
+          <button class="btn" id="restore-btn" type="button"></button>
+          <span class="msg" id="restore-msg"></span>
+        </div>
+      </div>
+    </details>
+    <footer id="t-privacy"></footer>
+  </main>
+</div>
+
+<script>
+const LANGS = [
+  ["en", "English"], ["zh-Hant", "繁體中文"], ["zh-Hans", "简体中文"],
+  ["ja", "日本語"], ["ko", "한국어"], ["vi", "Tiếng Việt"]
+];
+
+// Each row: key, then en, zh-Hant, zh-Hans, ja, ko, vi
+const ROWS = `
+title|Personal Health Record|個人健康紀錄|个人健康记录|個人健康記録|개인 건강 기록|Hồ sơ sức khỏe cá nhân
+tagline|My medical history in one place, readable in six languages.|我的病歷整理在一處，可用六種語言閱讀。|我的病历集中在一处，可用六种语言阅读。|私の病歴を一か所にまとめ、6言語で読めます。|내 병력을 한곳에 모아 6개 언어로 볼 수 있습니다.|Toàn bộ tiền sử bệnh của tôi ở một nơi, đọc được bằng sáu ngôn ngữ.
+edit|Edit record|編輯紀錄|编辑记录|記録を編集|기록 편집|Chỉnh sửa hồ sơ
+done|Done|完成|完成|完了|완료|Xong
+add|Add entry|新增一筆|添加一条|追加|항목 추가|Thêm mục
+remove|Remove|刪除|删除|削除|삭제|Xóa
+empty|No entries yet|尚無資料|暂无数据|記録はまだありません|아직 기록이 없습니다|Chưa có mục nào
+notSet|Not set|未填寫|未填写|未記入|미입력|Chưa điền
+none|None recorded|無紀錄|无记录|記録なし|기록 없음|Chưa ghi nhận
+backup|Backup and restore|備份與還原|备份与恢复|バックアップと復元|백업 및 복원|Sao lưu và khôi phục
+copy|Copy data|複製資料|复制数据|データをコピー|데이터 복사|Sao chép dữ liệu
+copied|Copied to clipboard|已複製到剪貼簿|已复制到剪贴板|クリップボードにコピーしました|클립보드에 복사됨|Đã sao chép
+copyFail|Select the text below and copy it manually|請選取下方文字並手動複製|请选中下方文字并手动复制|下のテキストを選択して手動でコピーしてください|아래 텍스트를 선택해 직접 복사하세요|Hãy chọn đoạn văn bên dưới và sao chép thủ công
+importLabel|Paste a backup here to restore it|在此貼上備份以還原|在此粘贴备份以恢复|ここにバックアップを貼り付けて復元|여기에 백업을 붙여넣어 복원하세요|Dán bản sao lưu vào đây để khôi phục
+restore|Restore|還原|恢复|復元|복원|Khôi phục
+restored|Restored|已還原|已恢复|復元しました|복원됨|Đã khôi phục
+badJson|That isn't a valid backup. Paste the full text you copied.|這不是有效的備份，請貼上完整複製的文字。|这不是有效的备份，请粘贴完整复制的文本。|有効なバックアップではありません。コピーした全文を貼り付けてください。|올바른 백업이 아닙니다. 복사한 전체 텍스트를 붙여넣으세요.|Đây không phải bản sao lưu hợp lệ. Hãy dán toàn bộ nội dung đã sao chép.
+updated|Last updated|最後更新|最后更新|最終更新|최종 수정|Cập nhật lần cuối
+privacy|Saved only in this browser. Copy a backup now and then. This record supports, but does not replace, care from your doctor.|資料只儲存在此瀏覽器中，請定期複製備份。本紀錄僅供參考，不能取代醫師的診療。|数据只保存在此浏览器中，请定期复制备份。本记录仅供参考，不能替代医生的诊疗。|データはこのブラウザにのみ保存されます。定期的にバックアップをコピーしてください。この記録は医師の診療に代わるものではありません。|데이터는 이 브라우저에만 저장됩니다. 주기적으로 백업을 복사하세요. 이 기록은 의사의 진료를 대신하지 않습니다.|Dữ liệu chỉ được lưu trong trình duyệt này. Hãy sao lưu định kỳ. Hồ sơ này hỗ trợ, không thay thế việc khám của bác sĩ.
+gIdentity|About me|關於我|关于我|本人について|기본 정보|Về tôi
+gHistory|Medical history|病史|病史|病歴|병력|Tiền sử bệnh
+gTreatment|Medications and tests|用藥與檢查|用药与检查|薬と検査|약물 및 검사|Thuốc và xét nghiệm
+gLife|Life and care|生活與照護|生活与照护|生活とケア|생활 및 돌봄|Cuộc sống và chăm sóc
+profile|Personal information|個人資料|个人资料|基本情報|개인 정보|Thông tin cá nhân
+emergency|Emergency contacts|緊急聯絡人|紧急联系人|緊急連絡先|비상 연락처|Liên hệ khẩn cấp
+providers|Doctors and clinics|醫師與診所|医生与诊所|主治医・医療機関|의사 및 병원|Bác sĩ và phòng khám
+insurance|Insurance|保險|保险|保険|보험|Bảo hiểm
+allergies|Allergies and intolerances|過敏與不耐症|过敏与不耐受|アレルギー・不耐性|알레르기 및 과민 반응|Dị ứng và không dung nạp
+conditions|Personal medical history|個人病史|个人病史|既往歴|개인 병력|Tiền sử bệnh cá nhân
+surgeries|Surgical history|手術史|手术史|手術歴|수술 이력|Tiền sử phẫu thuật
+hospitalizations|Hospital stays|住院紀錄|住院记录|入院歴|입원 이력|Lịch sử nhập viện
+family|Family history|家族病史|家族病史|家族歴|가족력|Tiền sử gia đình
+mental|Mental health|心理健康|心理健康|メンタルヘルス|정신 건강|Sức khỏe tâm thần
+womens|Women's health|婦女健康|妇女健康|婦人科歴|여성 건강|Sức khỏe phụ nữ
+currentMeds|Current medications|目前用藥|当前用药|現在の服薬|현재 복용 약물|Thuốc đang dùng
+pastMeds|Medication history|過去用藥|既往用药|過去の服薬歴|과거 복용 약물|Tiền sử dùng thuốc
+immunizations|Vaccinations|疫苗接種|疫苗接种|予防接種|예방접종|Tiêm chủng
+vitals|Vital signs|生命徵象|生命体征|バイタルサイン|활력 징후|Dấu hiệu sinh tồn
+labs|Lab results|檢驗結果|检验结果|検査結果|검사 결과|Kết quả xét nghiệm
+screenings|Vision, dental and hearing|視力、牙科與聽力|视力、牙科与听力|視力・歯科・聴力|시력·치과·청력|Mắt, răng và thính lực
+devices|Implants and medical devices|植入物與醫療器材|植入物与医疗器械|インプラント・医療機器|임플란트 및 의료기기|Thiết bị cấy ghép và y tế
+lifestyle|Lifestyle|生活習慣|生活习惯|生活習慣|생활 습관|Lối sống
+travel|Travel history|旅遊史|旅行史|渡航歴|여행 이력|Lịch sử đi lại
+directives|Care wishes|醫療意願|医疗意愿|医療に関する意思|의료 의향|Nguyện vọng chăm sóc
+notes|Notes|備註|备注|メモ|메모|Ghi chú
+fullName|Full name|姓名|姓名|氏名|성명|Họ và tên
+dob|Date of birth|出生日期|出生日期|生年月日|생년월일|Ngày sinh
+sex|Sex|性別|性别|性別|성별|Giới tính
+bloodType|Blood type|血型|血型|血液型|혈액형|Nhóm máu
+nationality|Nationality|國籍|国籍|国籍|국적|Quốc tịch
+languages|Languages spoken|使用語言|使用语言|使用言語|사용 언어|Ngôn ngữ sử dụng
+height|Height (cm)|身高 (cm)|身高 (cm)|身長 (cm)|키 (cm)|Chiều cao (cm)
+weight|Weight (kg)|體重 (kg)|体重 (kg)|体重 (kg)|체중 (kg)|Cân nặng (kg)
+phone|Phone|電話|电话|電話番号|전화번호|Điện thoại
+email|Email|電子郵件|电子邮件|メール|이메일|Email
+address|Address|地址|地址|住所|주소|Địa chỉ
+name|Name|姓名|姓名|氏名|이름|Họ tên
+relation|Relationship|關係|关系|続柄|관계|Quan hệ
+specialty|Specialty|科別|科室|診療科|진료과|Chuyên khoa
+clinic|Clinic or hospital|診所或醫院|诊所或医院|医療機関|의료기관|Phòng khám / bệnh viện
+insurer|Insurer|保險公司|保险公司|保険者|보험사|Công ty bảo hiểm
+plan|Plan|方案|方案|プラン|플랜|Gói bảo hiểm
+policyNo|Policy number|保單號碼|保单号|証券番号|증권 번호|Số hợp đồng
+validUntil|Valid until|有效期限|有效期至|有効期限|유효 기간|Hiệu lực đến
+substance|Allergen|過敏原|过敏原|アレルゲン|알레르겐|Tác nhân dị ứng
+reaction|Reaction|反應|反应|症状|반응|Phản ứng
+severity|Severity|嚴重程度|严重程度|重症度|중증도|Mức độ
+condition|Condition|疾病|疾病|病名|질환|Bệnh
+diagnosed|Diagnosed|診斷日期|诊断日期|診断日|진단일|Ngày chẩn đoán
+status|Status|狀態|状态|状態|상태|Tình trạng
+notes_f|Notes|備註|备注|備考|비고|Ghi chú
+procedure|Procedure|手術名稱|手术名称|術式|수술명|Phẫu thuật
+date|Date|日期|日期|日付|날짜|Ngày
+hospital|Hospital|醫院|医院|病院|병원|Bệnh viện
+reason|Reason|原因|原因|理由|사유|Lý do
+ageOnset|Age at onset|發病年齡|发病年龄|発症年齢|발병 연령|Tuổi khởi phát
+menarche|Age at first period|初經年齡|初潮年龄|初経年齢|초경 연령|Tuổi có kinh lần đầu
+cycle|Cycle length (days)|週期長度（天）|周期长度（天）|月経周期（日）|월경 주기 (일)|Chu kỳ kinh (ngày)
+lastPeriod|Last period|最後一次月經|末次月经|最終月経|마지막 월경일|Kỳ kinh gần nhất
+pregnancies|Pregnancies|懷孕次數|妊娠次数|妊娠歴|임신 횟수|Số lần mang thai
+contraception|Contraception|避孕方式|避孕方式|避妊法|피임 방법|Biện pháp tránh thai
+drug|Medication|藥名|药名|薬剤名|약품명|Tên thuốc
+dose|Dose|劑量|剂量|用量|용량|Liều
+frequency|How often|頻率|频率|服用回数|복용 횟수|Tần suất
+since|Started|開始日期|开始日期|開始日|시작일|Bắt đầu
+period|Period|使用期間|使用期间|期間|기간|Thời gian
+reasonStopped|Why stopped|停藥原因|停药原因|中止理由|중단 사유|Lý do ngừng
+vaccine|Vaccine|疫苗|疫苗|ワクチン|백신|Vắc-xin
+doseNo|Dose no.|劑次|剂次|接種回数|차수|Mũi số
+measurement|Measurement|項目|项目|項目|항목|Chỉ số
+value|Value|數值|数值|値|수치|Giá trị
+test|Test|檢驗項目|检验项目|検査項目|검사 항목|Xét nghiệm
+result|Result|結果|结果|結果|결과|Kết quả
+range|Reference range|參考範圍|参考范围|基準値|참고 범위|Khoảng tham chiếu
+area|Area|項目|项目|分野|분야|Lĩnh vực
+finding|Finding|檢查發現|检查发现|所見|소견|Kết luận
+device|Device|器材|器械|機器|기기|Thiết bị
+occupation|Occupation|職業|职业|職業|직업|Nghề nghiệp
+smoking|Smoking|吸菸|吸烟|喫煙|흡연|Hút thuốc
+alcohol|Alcohol|飲酒|饮酒|飲酒|음주|Rượu bia
+exercise|Exercise|運動|运动|運動|운동|Tập thể dục
+diet|Diet|飲食|饮食|食事|식습관|Chế độ ăn
+sleep|Sleep|睡眠|睡眠|睡眠|수면|Giấc ngủ
+country|Country|國家|国家|国・地域|국가|Quốc gia
+organDonor|Organ donor|器官捐贈|器官捐献|臓器提供|장기 기증|Hiến tạng
+advanceDirective|Advance directive|預立醫療決定|预立医疗指示|事前指示書|사전의료의향서|Chỉ thị y tế trước
+carePreferences|Care preferences|照護偏好|照护偏好|ケアの希望|돌봄 선호|Mong muốn chăm sóc
+generalNotes|Notes for doctors|給醫師的備註|给医生的备注|医師へのメモ|의사에게 전할 메모|Ghi chú cho bác sĩ
+`;
+
+const I18N = {};
+LANGS.forEach(([code]) => I18N[code] = {});
+ROWS.trim().split("\n").forEach(line => {
+  const [key, ...vals] = line.split("|");
+  LANGS.forEach(([code], i) => I18N[code][key] = vals[i]);
+});
+
+const SECTIONS = [
+  { id: "profile", g: "gIdentity", type: "fields", keys: ["fullName", "dob", "sex", "bloodType", "nationality", "languages", "height", "weight", "phone", "email", "address"] },
+  { id: "emergency", g: "gIdentity", type: "list", keys: ["name", "relation", "phone"] },
+  { id: "providers", g: "gIdentity", type: "list", keys: ["name", "specialty", "clinic", "phone"] },
+  { id: "insurance", g: "gIdentity", type: "fields", keys: ["insurer", "plan", "policyNo", "validUntil"] },
+  { id: "allergies", g: "gHistory", type: "list", keys: ["substance", "reaction", "severity"] },
+  { id: "conditions", g: "gHistory", type: "list", keys: ["condition", "diagnosed", "status", "notes_f"] },
+  { id: "surgeries", g: "gHistory", type: "list", keys: ["procedure", "date", "hospital", "notes_f"] },
+  { id: "hospitalizations", g: "gHistory", type: "list", keys: ["reason", "date", "hospital", "notes_f"] },
+  { id: "family", g: "gHistory", type: "list", keys: ["relation", "condition", "ageOnset", "notes_f"] },
+  { id: "mental", g: "gHistory", type: "list", keys: ["condition", "diagnosed", "status", "notes_f"] },
+  { id: "womens", g: "gHistory", type: "fields", keys: ["menarche", "cycle", "lastPeriod", "pregnancies", "contraception"] },
+  { id: "currentMeds", g: "gTreatment", type: "list", keys: ["drug", "dose", "frequency", "reason", "since"] },
+  { id: "pastMeds", g: "gTreatment", type: "list", keys: ["drug", "dose", "period", "reasonStopped"] },
+  { id: "immunizations", g: "gTreatment", type: "list", keys: ["vaccine", "doseNo", "date", "notes_f"] },
+  { id: "vitals", g: "gTreatment", type: "list", keys: ["date", "measurement", "value", "notes_f"] },
+  { id: "labs", g: "gTreatment", type: "list", keys: ["test", "date", "result", "range"] },
+  { id: "screenings", g: "gTreatment", type: "list", keys: ["area", "date", "finding"] },
+  { id: "devices", g: "gTreatment", type: "list", keys: ["device", "date", "notes_f"] },
+  { id: "lifestyle", g: "gLife", type: "fields", keys: ["occupation", "smoking", "alcohol", "exercise", "diet", "sleep"] },
+  { id: "travel", g: "gLife", type: "list", keys: ["country", "date", "notes_f"] },
+  { id: "directives", g: "gLife", type: "fields", keys: ["organDonor", "advanceDirective", "carePreferences"] },
+  { id: "notes", g: "gLife", type: "fields", keys: ["generalNotes"], wide: true }
+];
+const GROUPS = ["gIdentity", "gHistory", "gTreatment", "gLife"];
+const DATE_KEYS = new Set(["dob", "lastPeriod", "validUntil"]);
+const STORE = "phr-record-v1";
+const LANG_STORE = "phr-lang";
+
+function blankRecord() {
+  const r = { updated: null };
+  SECTIONS.forEach(s => r[s.id] = s.type === "list" ? [] : {});
+  Object.assign(r.profile, {
+    fullName: "Trần Ngọc Bảo Trâm",
+    sex: "Female",
+    nationality: "Vietnamese",
+    languages: "Vietnamese, English"
+  });
+  return r;
+}
+
+function load(key, fallback) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
+}
+function persist() {
+  record.updated = new Date().toISOString();
+  try { localStorage.setItem(STORE, JSON.stringify(record)); } catch {}
+  renderMeta();
+}
+
+function normalize(data) {
+  const base = blankRecord();
+  SECTIONS.forEach(s => {
+    if (s.type === "list") base[s.id] = Array.isArray(data[s.id]) ? data[s.id] : [];
+    else base[s.id] = data[s.id] && typeof data[s.id] === "object" ? data[s.id] : {};
+  });
+  base.updated = data.updated || null;
+  return base;
+}
+
+let record = normalize(load(STORE, blankRecord()));
+let lang = load(LANG_STORE, null) || guessLang();
+let editing = false;
+
+function guessLang() {
+  const n = (navigator.language || "en").toLowerCase();
+  if (n.startsWith("zh")) return /cn|sg|hans/.test(n) ? "zh-Hans" : "zh-Hant";
+  return ["ja", "ko", "vi"].find(c => n.startsWith(c)) || "en";
+}
+
+const t = key => I18N[lang][key] ?? I18N.en[key] ?? key;
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const filled = v => String(v ?? "").trim() !== "";
+const $ = id => document.getElementById(id);
+
+function severityClass(v) {
+  const s = String(v).toLowerCase();
+  if (/severe|anaphyl|重|심각|nặng|nghiêm trọng|重篤/.test(s)) return "crit";
+  if (/moderate|中|중등|trung bình/.test(s)) return "warn";
+  if (/mild|輕|轻|軽|경미|nhẹ/.test(s)) return "ok";
+  return "";
+}
+function statusClass(v) {
+  const s = String(v).toLowerCase();
+  if (/active|ongoing|current|治療中|進行|活動|진행|đang/.test(s)) return "warn";
+  if (/resolved|cured|healed|痊癒|治愈|治癒|완치|khỏi/.test(s)) return "ok";
+  return "";
+}
+
+function renderStatic() {
+  document.documentElement.lang = lang;
+  $("langs").innerHTML = LANGS.map(([code, label]) =>
+    `<button type="button" data-lang="${code}" aria-pressed="${code === lang}" lang="${code}">${label}</button>`).join("");
+  $("t-title").textContent = t("title");
+  $("t-tagline").textContent = t("tagline");
+  $("t-backup").textContent = t("backup");
+  $("copy-btn").textContent = t("copy");
+  $("t-import").textContent = t("importLabel");
+  $("restore-btn").textContent = t("restore");
+  $("t-privacy").textContent = t("privacy");
+  $("mode-btn").textContent = editing ? t("done") : t("edit");
+}
+
+function renderMeta() {
+  const p = record.profile;
+  const name = p.fullName || "";
+  $("who").textContent = name;
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  $("seal").textContent = parts.length ? parts[parts.length - 1].slice(0, 4) : "PHR";
+  $("rec-id").textContent = (p.nationality || "").slice(0, 3).toUpperCase() + (p.dob ? " · " + p.dob : "");
+  $("updated").textContent = record.updated
+    ? `${t("updated")}: ${new Date(record.updated).toLocaleString(lang)}`
+    : "";
+  renderSummary();
+  renderIndex();
+}
+
+function renderSummary() {
+  const allergies = record.allergies.map(a => a.substance).filter(filled);
+  const meds = record.currentMeds.map(m => [m.drug, m.dose].filter(filled).join(" ")).filter(filled);
+  const contact = record.emergency.find(c => filled(c.name) || filled(c.phone));
+  const tiles = [
+    { label: t("bloodType"), html: `<p class="blood">${esc(record.profile.bloodType) || "—"}</p>` },
+    { label: t("allergies"), html: `<p>${allergies.length ? esc(allergies.join(", ")) : esc(t("none"))}</p>`, alert: allergies.length > 0 },
+    { label: t("currentMeds"), html: `<p>${meds.length ? esc(meds.join(", ")) : esc(t("none"))}</p>` },
+    { label: t("emergency"), html: `<p>${contact ? esc([contact.name, contact.relation && `(${contact.relation})`, contact.phone].filter(filled).join(" ")) : esc(t("none"))}</p>` }
+  ];
+  $("summary").innerHTML = tiles.map(x =>
+    `<div class="tile${x.alert ? " alert" : ""}"><h3>${esc(x.label)}</h3>${x.html}</div>`).join("");
+}
+
+function countFor(s) {
+  return s.type === "list"
+    ? String(record[s.id].length)
+    : `${s.keys.filter(k => filled(record[s.id][k])).length}/${s.keys.length}`;
+}
+
+function renderIndex() {
+  $("index").innerHTML = GROUPS.map(g => `
+    <div><h4>${esc(t(g))}</h4><ul>
+      ${SECTIONS.filter(s => s.g === g).map(s =>
+        `<li><a href="#${s.id}">${esc(t(s.id))}<span>${countFor(s)}</span></a></li>`).join("")}
+    </ul></div>`).join("");
+}
+
+function fieldInput(sec, key, value, idx) {
+  const id = idx == null ? `${sec}-${key}` : `${sec}-${idx}-${key}`;
+  const data = `data-sec="${sec}" data-key="${key}"${idx == null ? "" : ` data-idx="${idx}"`}`;
+  if (key === "generalNotes") return `<textarea class="cell" id="${id}" ${data}>${esc(value)}</textarea>`;
+  const type = DATE_KEYS.has(key) ? "date" : "text";
+  return `<input class="cell" type="${type}" id="${id}" ${data} value="${esc(value)}" aria-label="${esc(t(key))}">`;
+}
+
+function cellView(key, v) {
+  if (!filled(v)) return "";
+  if (key === "severity") return `<span class="chip ${severityClass(v)}">${esc(v)}</span>`;
+  if (key === "status") return `<span class="chip ${statusClass(v)}">${esc(v)}</span>`;
+  return esc(v);
+}
+
+function renderSection(s) {
+  const data = record[s.id];
+  let body;
+  if (s.type === "fields") {
+    body = `<dl class="fields${s.wide ? " wide" : ""}">${s.keys.map(k => `
+      <div class="field"><dt>${esc(t(k))}</dt>${editing
+        ? `<dd>${fieldInput(s.id, k, data[k] || "")}</dd>`
+        : `<dd class="${filled(data[k]) ? "" : "unset"}">${filled(data[k]) ? esc(data[k]) : esc(t("notSet"))}</dd>`}
+      </div>`).join("")}</dl>`;
+  } else {
+    const head = `<tr>${s.keys.map(k => `<th>${esc(t(k))}</th>`).join("")}${editing ? "<th></th>" : ""}</tr>`;
+    const rows = data.map((row, i) => `<tr>${s.keys.map(k =>
+      `<td>${editing ? fieldInput(s.id, k, row[k] || "", i) : cellView(k, row[k])}</td>`).join("")}
+      ${editing ? `<td><button class="btn small danger" type="button" data-remove="${s.id}" data-idx="${i}">${esc(t("remove"))}</button></td>` : ""}</tr>`).join("");
+    body = data.length
+      ? `<div class="table-wrap"><table><thead>${head}</thead><tbody>${rows}</tbody></table></div>`
+      : `<p class="empty">${esc(t("empty"))}</p>`;
+    if (editing) body += `<button class="btn small add-row" type="button" data-add="${s.id}">+ ${esc(t("add"))}</button>`;
+  }
+  return `<section class="panel" id="${s.id}">
+    <header><h2>${esc(t(s.id))}</h2><span>${countFor(s)}</span></header>${body}</section>`;
+}
+
+function renderBody() {
+  $("groups").innerHTML = GROUPS.map(g => `
+    <div><h3 class="group-title">${esc(t(g))}</h3>
+      <div class="group-body">${SECTIONS.filter(s => s.g === g).map(renderSection).join("")}</div>
+    </div>`).join("");
+}
+
+function renderAll() {
+  renderStatic();
+  renderMeta();
+  renderBody();
+}
+
+$("langs").addEventListener("click", e => {
+  const b = e.target.closest("button[data-lang]");
+  if (!b) return;
+  lang = b.dataset.lang;
+  try { localStorage.setItem(LANG_STORE, JSON.stringify(lang)); } catch {}
+  renderAll();
+});
+
+$("mode-btn").addEventListener("click", () => {
+  editing = !editing;
+  renderAll();
+});
+
+$("groups").addEventListener("input", e => {
+  const el = e.target;
+  if (!el.dataset.sec) return;
+  const { sec, key, idx } = el.dataset;
+  if (idx == null) record[sec][key] = el.value;
+  else record[sec][idx][key] = el.value;
+  persist();
+});
+
+$("groups").addEventListener("click", e => {
+  const add = e.target.closest("[data-add]");
+  const rm = e.target.closest("[data-remove]");
+  if (add) {
+    const sec = add.dataset.add;
+    record[sec].push({});
+    persist();
+    renderBody();
+    const s = SECTIONS.find(x => x.id === sec);
+    $(`${sec}-${record[sec].length - 1}-${s.keys[0]}`)?.focus();
+  } else if (rm) {
+    record[rm.dataset.remove].splice(Number(rm.dataset.idx), 1);
+    persist();
+    renderBody();
+  }
+});
+
+$("copy-btn").addEventListener("click", () => {
+  const text = JSON.stringify(record, null, 2);
+  const box = $("import-box");
+  const msg = $("copy-msg");
+  navigator.clipboard.writeText(text)
+    .then(() => { msg.textContent = t("copied"); })
+    .catch(() => { box.value = text; box.select(); msg.textContent = t("copyFail"); });
+});
+
+$("restore-btn").addEventListener("click", () => {
+  const msg = $("restore-msg");
+  try {
+    const data = JSON.parse($("import-box").value);
+    if (!data || typeof data !== "object" || !data.profile) throw new Error();
+    record = normalize(data);
+    persist();
+    renderAll();
+    msg.className = "msg";
+    msg.textContent = t("restored");
+  } catch {
+    msg.className = "msg error";
+    msg.textContent = t("badJson");
+  }
+});
+
+renderAll();
+</script>
+</body>
+</html>
