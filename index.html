@@ -126,6 +126,12 @@ textarea.cell { min-height: 110px; resize: vertical; }
 input.cell:focus, textarea.cell:focus { border-color: var(--accent); outline: none; }
 .add-row { margin-top: 10px; }
 
+.orig { display: block; margin-top: 2px; font-size: 12px; color: var(--muted); font-style: normal; white-space: normal; }
+.tag { display: inline-block; padding: 0 6px; border-radius: 6px; font-size: 11px; color: var(--muted); border: 1px solid var(--line); vertical-align: middle; }
+.tr-status { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px; padding: 10px 14px; border-radius: 10px; background: var(--soft); border: 1px solid var(--line); font-size: 14px; }
+.tr-status.muted { color: var(--muted); background: var(--surface); }
+select.cell { width: 100%; min-width: 120px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); }
+select.cell:focus { border-color: var(--accent); outline: none; }
 details.backup { margin-top: 30px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; }
 details.backup summary { cursor: pointer; font-weight: 500; }
 .backup-body { display: grid; gap: 10px; margin-top: 12px; }
@@ -177,6 +183,7 @@ footer { color: var(--muted); font-size: 13px; margin-top: 22px; max-width: 70ch
       <small id="updated"></small>
       <button class="btn primary" id="mode-btn" type="button"></button>
     </div>
+    <div class="tr-status" id="tr-status" role="status" hidden></div>
     <div class="groups" id="groups"></div>
 
     <details class="backup">
@@ -203,6 +210,8 @@ const LANGS = [
   ["en", "English"], ["zh-Hant", "繁體中文"], ["zh-Hans", "简体中文"],
   ["ja", "日本語"], ["ko", "한국어"], ["vi", "Tiếng Việt"]
 ];
+const LANG_NAME = Object.fromEntries(LANGS);
+const TR_CODE = { en: "en", "zh-Hant": "zh-Hant", "zh-Hans": "zh", ja: "ja", ko: "ko", vi: "vi" };
 
 // Each row: key, then en, zh-Hant, zh-Hans, ja, ko, vi
 const ROWS = `
@@ -215,6 +224,15 @@ remove|Remove|刪除|删除|削除|삭제|Xóa
 empty|No entries yet|尚無資料|暂无数据|記録はまだありません|아직 기록이 없습니다|Chưa có mục nào
 notSet|Not set|未填寫|未填写|未記入|미입력|Chưa điền
 none|None recorded|無紀錄|无记录|記録なし|기록 없음|Chưa ghi nhận
+choose|Choose…|請選擇…|请选择…|選択…|선택…|Chọn…
+original|Original|原文|原文|原文|원문|Bản gốc
+autoTag|Auto-translated|自動翻譯|自动翻译|自動翻訳|자동 번역|Tự động dịch
+trWorking|Translating your entries… {n}/{total}|正在翻譯您的資料… {n}/{total}|正在翻译您的数据… {n}/{total}|入力内容を翻訳中… {n}/{total}|입력한 내용을 번역하는 중… {n}/{total}|Đang dịch dữ liệu của bạn… {n}/{total}
+trDownloading|Downloading the translation model… {p}%|正在下載翻譯模型… {p}%|正在下载翻译模型… {p}%|翻訳モデルをダウンロード中… {p}%|번역 모델 다운로드 중… {p}%|Đang tải mô hình dịch… {p}%
+trNeedClick|Your entries haven't been translated into this language yet.|您的資料尚未翻譯成此語言。|您的数据尚未翻译成此语言。|入力内容はまだこの言語に翻訳されていません。|입력한 내용이 아직 이 언어로 번역되지 않았습니다.|Dữ liệu của bạn chưa được dịch sang ngôn ngữ này.
+trBtn|Translate now|立即翻譯|立即翻译|今すぐ翻訳|지금 번역|Dịch ngay
+trUnsupported|Automatic translation works in Chrome or Edge on a computer. Here, entries stay in the language you typed them. You can add your own translation in Edit mode.|自動翻譯需在電腦版 Chrome 或 Edge 上使用。在此瀏覽器中，資料會以輸入時的語言顯示，您可以在編輯模式中自行輸入翻譯。|自动翻译需在电脑版 Chrome 或 Edge 上使用。在此浏览器中，数据会以输入时的语言显示，您可以在编辑模式中自行输入翻译。|自動翻訳はパソコン版の Chrome または Edge で利用できます。このブラウザでは入力した言語のまま表示されます。編集モードで自分で訳を入力することもできます。|자동 번역은 컴퓨터의 Chrome 또는 Edge에서 작동합니다. 이 브라우저에서는 입력한 언어 그대로 표시되며, 편집 모드에서 직접 번역을 입력할 수 있습니다.|Tính năng tự dịch chạy trên Chrome hoặc Edge máy tính. Ở trình duyệt này, dữ liệu giữ nguyên ngôn ngữ bạn đã nhập. Bạn có thể tự nhập bản dịch trong chế độ chỉnh sửa.
+trFailed|Some entries couldn't be translated, so they're shown in their original language.|部分資料無法翻譯，因此以原文顯示。|部分数据无法翻译，因此以原文显示。|一部の項目は翻訳できなかったため、原文で表示しています。|일부 항목은 번역하지 못해 원문으로 표시됩니다.|Một số mục không dịch được nên được hiển thị bằng ngôn ngữ gốc.
 backup|Backup and restore|備份與還原|备份与恢复|バックアップと復元|백업 및 복원|Sao lưu và khôi phục
 copy|Copy data|複製資料|复制数据|データをコピー|데이터 복사|Sao chép dữ liệu
 copied|Copied to clipboard|已複製到剪貼簿|已复制到剪贴板|クリップボードにコピーしました|클립보드에 복사됨|Đã sao chép
@@ -224,7 +242,7 @@ restore|Restore|還原|恢复|復元|복원|Khôi phục
 restored|Restored|已還原|已恢复|復元しました|복원됨|Đã khôi phục
 badJson|That isn't a valid backup. Paste the full text you copied.|這不是有效的備份，請貼上完整複製的文字。|这不是有效的备份，请粘贴完整复制的文本。|有効なバックアップではありません。コピーした全文を貼り付けてください。|올바른 백업이 아닙니다. 복사한 전체 텍스트를 붙여넣으세요.|Đây không phải bản sao lưu hợp lệ. Hãy dán toàn bộ nội dung đã sao chép.
 updated|Last updated|最後更新|最后更新|最終更新|최종 수정|Cập nhật lần cuối
-privacy|Saved only in this browser. Copy a backup now and then. This record supports, but does not replace, care from your doctor.|資料只儲存在此瀏覽器中，請定期複製備份。本紀錄僅供參考，不能取代醫師的診療。|数据只保存在此浏览器中，请定期复制备份。本记录仅供参考，不能替代医生的诊疗。|データはこのブラウザにのみ保存されます。定期的にバックアップをコピーしてください。この記録は医師の診療に代わるものではありません。|데이터는 이 브라우저에만 저장됩니다. 주기적으로 백업을 복사하세요. 이 기록은 의사의 진료를 대신하지 않습니다.|Dữ liệu chỉ được lưu trong trình duyệt này. Hãy sao lưu định kỳ. Hồ sơ này hỗ trợ, không thay thế việc khám của bác sĩ.
+privacy|Saved only in this browser, and translation runs on your own device, so nothing is sent to a server. Copy a backup now and then. This record supports, but does not replace, care from your doctor.|資料只儲存在此瀏覽器中，翻譯也在您的裝置上進行，不會傳送到任何伺服器。請定期複製備份。本紀錄僅供參考，不能取代醫師的診療。|数据只保存在此浏览器中，翻译也在您的设备上进行，不会发送到任何服务器。请定期复制备份。本记录仅供参考，不能替代医生的诊疗。|データはこのブラウザにのみ保存され、翻訳もお使いの端末上で行われるため、サーバーには送信されません。定期的にバックアップをコピーしてください。この記録は医師の診療に代わるものではありません。|데이터는 이 브라우저에만 저장되고 번역도 기기에서 처리되므로 서버로 전송되지 않습니다. 주기적으로 백업을 복사하세요. 이 기록은 의사의 진료를 대신하지 않습니다.|Dữ liệu chỉ được lưu trong trình duyệt này và việc dịch chạy ngay trên thiết bị của bạn, nên không có gì được gửi lên máy chủ. Hãy sao lưu định kỳ. Hồ sơ này hỗ trợ, không thay thế việc khám của bác sĩ.
 gIdentity|About me|關於我|关于我|本人について|기본 정보|Về tôi
 gHistory|Medical history|病史|病史|病歴|병력|Tiền sử bệnh
 gTreatment|Medications and tests|用藥與檢查|用药与检查|薬と検査|약물 및 검사|Thuốc và xét nghiệm
@@ -314,6 +332,25 @@ organDonor|Organ donor|器官捐贈|器官捐献|臓器提供|장기 기증|Hi�
 advanceDirective|Advance directive|預立醫療決定|预立医疗指示|事前指示書|사전의료의향서|Chỉ thị y tế trước
 carePreferences|Care preferences|照護偏好|照护偏好|ケアの希望|돌봄 선호|Mong muốn chăm sóc
 generalNotes|Notes for doctors|給醫師的備註|给医生的备注|医師へのメモ|의사에게 전할 메모|Ghi chú cho bác sĩ
+opt_female|Female|女性|女性|女性|여성|Nữ
+opt_male|Male|男性|男性|男性|남성|Nam
+opt_other|Other|其他|其他|その他|기타|Khác
+opt_mild|Mild|輕度|轻度|軽度|경증|Nhẹ
+opt_moderate|Moderate|中度|中度|中等度|중등도|Trung bình
+opt_severe|Severe|重度|重度|重度|중증|Nặng
+opt_lifeThreatening|Life-threatening|危及生命|危及生命|生命に関わる|생명 위협|Đe dọa tính mạng
+opt_active|Active|治療中|治疗中|治療中|진행 중|Đang điều trị
+opt_managed|Under control|已控制|已控制|コントロール良好|조절 중|Đã kiểm soát
+opt_resolved|Resolved|已痊癒|已痊愈|治癒|완치|Đã khỏi
+opt_smokeNever|Never smoked|從未吸菸|从未吸烟|喫煙歴なし|비흡연|Chưa từng hút
+opt_smokeFormer|Former smoker|已戒菸|已戒烟|過去に喫煙|과거 흡연|Đã bỏ thuốc
+opt_smokeCurrent|Current smoker|目前吸菸|目前吸烟|現在喫煙|현재 흡연|Đang hút
+opt_drinkNone|None|不喝酒|不喝酒|飲まない|안 마심|Không uống
+opt_drinkSome|Occasionally|偶爾|偶尔|時々|가끔|Thỉnh thoảng
+opt_drinkRegular|Regularly|經常|经常|よく飲む|자주|Thường xuyên
+opt_yes|Yes|是|是|はい|예|Có
+opt_no|No|否|否|いいえ|아니요|Không
+opt_undecided|Undecided|未決定|未决定|未定|미정|Chưa quyết định
 `;
 
 const I18N = {};
@@ -349,43 +386,29 @@ const SECTIONS = [
 ];
 const GROUPS = ["gIdentity", "gHistory", "gTreatment", "gLife"];
 const DATE_KEYS = new Set(["dob", "lastPeriod", "validUntil"]);
+const CHOICES = {
+  sex: ["female", "male", "other"],
+  bloodType: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+  severity: ["mild", "moderate", "severe", "lifeThreatening"],
+  status: ["active", "managed", "resolved"],
+  smoking: ["smokeNever", "smokeFormer", "smokeCurrent"],
+  alcohol: ["drinkNone", "drinkSome", "drinkRegular"],
+  organDonor: ["yes", "no", "undecided"]
+};
+const CHIP = { mild: "ok", moderate: "warn", severe: "crit", lifeThreatening: "crit", active: "warn", resolved: "ok" };
+// Names, contact details, dates and numbers are kept exactly as typed.
+const KEEP = new Set(["fullName", "name", "phone", "email", "address", "policyNo", "dob", "date", "diagnosed", "since",
+  "lastPeriod", "validUntil", "height", "weight", "cycle", "menarche", "pregnancies", "doseNo", "ageOnset", "value", "range"]);
 const STORE = "phr-record-v1";
 const LANG_STORE = "phr-lang";
 
-function blankRecord() {
-  const r = { updated: null };
-  SECTIONS.forEach(s => r[s.id] = s.type === "list" ? [] : {});
-  Object.assign(r.profile, {
-    fullName: "Trần Ngọc Bảo Trâm",
-    sex: "Female",
-    nationality: "Vietnamese",
-    languages: "Vietnamese, English"
-  });
-  return r;
-}
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const isText = (key) => !CHOICES[key] && !KEEP.has(key);
 
 function load(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
 }
-function persist() {
-  record.updated = new Date().toISOString();
-  try { localStorage.setItem(STORE, JSON.stringify(record)); } catch {}
-  renderMeta();
-}
-
-function normalize(data) {
-  const base = blankRecord();
-  SECTIONS.forEach(s => {
-    if (s.type === "list") base[s.id] = Array.isArray(data[s.id]) ? data[s.id] : [];
-    else base[s.id] = data[s.id] && typeof data[s.id] === "object" ? data[s.id] : {};
-  });
-  base.updated = data.updated || null;
-  return base;
-}
-
-let record = normalize(load(STORE, blankRecord()));
-let lang = load(LANG_STORE, null) || guessLang();
-let editing = false;
 
 function guessLang() {
   const n = (navigator.language || "en").toLowerCase();
@@ -393,23 +416,91 @@ function guessLang() {
   return ["ja", "ko", "vi"].find(c => n.startsWith(c)) || "en";
 }
 
+let lang = load(LANG_STORE, null) || guessLang();
+if (!LANG_NAME[lang]) lang = "en";
 const t = key => I18N[lang][key] ?? I18N.en[key] ?? key;
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const filled = v => String(v ?? "").trim() !== "";
-const $ = id => document.getElementById(id);
 
-function severityClass(v) {
-  const s = String(v).toLowerCase();
-  if (/severe|anaphyl|重|심각|nặng|nghiêm trọng|重篤/.test(s)) return "crit";
-  if (/moderate|中|중등|trung bình/.test(s)) return "warn";
-  if (/mild|輕|轻|軽|경미|nhẹ/.test(s)) return "ok";
-  return "";
+function detectLang(text, fallback) {
+  if (/[가-힯ᄀ-ᇿ]/.test(text)) return "ko";
+  if (/[぀-ヿ]/.test(text)) return "ja";
+  if (/[一-鿿]/.test(text)) return fallback.startsWith("zh") || fallback === "ja" ? fallback : "zh-Hant";
+  if (/[àáảãạăằắẳẵặâầấẩẫậđèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵ]/i.test(text)) return "vi";
+  if (/[a-z]/i.test(text)) return fallback === "vi" ? "vi" : "en";
+  return fallback;
 }
-function statusClass(v) {
-  const s = String(v).toLowerCase();
-  if (/active|ongoing|current|治療中|進行|活動|진행|đang/.test(s)) return "warn";
-  if (/resolved|cured|healed|痊癒|治愈|治癒|완치|khỏi/.test(s)) return "ok";
-  return "";
+
+function toCode(key, s) {
+  s = String(s ?? "").trim();
+  if (!s || CHOICES[key].includes(s)) return s;
+  const low = s.toLowerCase();
+  const hit = CHOICES[key].find(c => LANGS.some(([l]) => (I18N[l]["opt_" + c] || c).toLowerCase() === low));
+  return hit || s;
+}
+
+function normValue(key, v) {
+  const raw = v && typeof v === "object" ? v.t : v;
+  if (CHOICES[key]) return toCode(key, raw);
+  if (KEEP.has(key)) return String(raw ?? "");
+  if (v && typeof v === "object") return { l: LANG_NAME[v.l] ? v.l : lang, t: String(v.t ?? ""), tr: v.tr && typeof v.tr === "object" ? v.tr : {} };
+  const s = String(v ?? "");
+  return s.trim() ? { l: detectLang(s, lang), t: s, tr: {} } : "";
+}
+
+function normRow(keys, row) {
+  const out = {};
+  keys.forEach(k => { if (row && row[k] != null) out[k] = normValue(k, row[k]); });
+  return out;
+}
+
+function normalize(data) {
+  const r = { updated: data.updated || null };
+  SECTIONS.forEach(s => {
+    r[s.id] = s.type === "list"
+      ? (Array.isArray(data[s.id]) ? data[s.id] : []).map(row => normRow(s.keys, row))
+      : normRow(s.keys, data[s.id]);
+  });
+  return r;
+}
+
+const SAMPLE = {
+  profile: { fullName: "Trần Ngọc Bảo Trâm", sex: "female", nationality: "Vietnamese", languages: "Vietnamese, English" }
+};
+let record = normalize(load(STORE, SAMPLE));
+let editing = false;
+
+function save(touch = true) {
+  if (touch) record.updated = new Date().toISOString();
+  try { localStorage.setItem(STORE, JSON.stringify(record)); } catch {}
+}
+
+function filled(v) {
+  return v && typeof v === "object" ? v.t.trim() !== "" : String(v ?? "").trim() !== "";
+}
+
+function shown(v) {
+  if (v.l === lang) return { t: v.t };
+  const tr = v.tr[lang];
+  return tr ? { t: tr.t, auto: tr.auto } : { t: v.t, pending: true };
+}
+
+function plain(key, v) {
+  if (!filled(v)) return "";
+  if (typeof v === "object") return shown(v).t;
+  if (CHOICES[key]) return I18N[lang]["opt_" + v] ?? v;
+  return v;
+}
+
+function valueHtml(key, v) {
+  if (!filled(v)) return "";
+  if (CHOICES[key]) {
+    const label = esc(plain(key, v));
+    return key === "severity" || key === "status" ? `<span class="chip ${CHIP[v] || ""}">${label}</span>` : label;
+  }
+  if (typeof v !== "object") return esc(v);
+  const s = shown(v);
+  if (s.auto) return `${esc(s.t)}<small class="orig" title="${esc(t("autoTag"))}" lang="${v.l}">${esc(LANG_NAME[v.l])}: ${esc(v.t)}</small>`;
+  if (s.pending) return `<span lang="${v.l}">${esc(s.t)}</span> <span class="tag">${esc(LANG_NAME[v.l])}</span>`;
+  return esc(s.t);
 }
 
 function renderStatic() {
@@ -432,23 +523,22 @@ function renderMeta() {
   $("who").textContent = name;
   const parts = name.trim().split(/\s+/).filter(Boolean);
   $("seal").textContent = parts.length ? parts[parts.length - 1].slice(0, 4) : "PHR";
-  $("rec-id").textContent = (p.nationality || "").slice(0, 3).toUpperCase() + (p.dob ? " · " + p.dob : "");
-  $("updated").textContent = record.updated
-    ? `${t("updated")}: ${new Date(record.updated).toLocaleString(lang)}`
-    : "";
+  $("rec-id").textContent = p.dob || "";
+  $("updated").textContent = record.updated ? `${t("updated")}: ${new Date(record.updated).toLocaleString(lang)}` : "";
   renderSummary();
   renderIndex();
 }
 
 function renderSummary() {
-  const allergies = record.allergies.map(a => a.substance).filter(filled);
-  const meds = record.currentMeds.map(m => [m.drug, m.dose].filter(filled).join(" ")).filter(filled);
-  const contact = record.emergency.find(c => filled(c.name) || filled(c.phone));
+  const allergies = record.allergies.map(a => plain("substance", a.substance)).filter(Boolean);
+  const meds = record.currentMeds.map(m => [plain("drug", m.drug), plain("dose", m.dose)].filter(Boolean).join(" ")).filter(Boolean);
+  const c = record.emergency.find(c => filled(c.name) || filled(c.phone));
+  const contact = c && [c.name, filled(c.relation) && `(${plain("relation", c.relation)})`, c.phone].filter(Boolean).join(" ");
   const tiles = [
     { label: t("bloodType"), html: `<p class="blood">${esc(record.profile.bloodType) || "—"}</p>` },
-    { label: t("allergies"), html: `<p>${allergies.length ? esc(allergies.join(", ")) : esc(t("none"))}</p>`, alert: allergies.length > 0 },
-    { label: t("currentMeds"), html: `<p>${meds.length ? esc(meds.join(", ")) : esc(t("none"))}</p>` },
-    { label: t("emergency"), html: `<p>${contact ? esc([contact.name, contact.relation && `(${contact.relation})`, contact.phone].filter(filled).join(" ")) : esc(t("none"))}</p>` }
+    { label: t("allergies"), html: `<p>${esc(allergies.length ? allergies.join(", ") : t("none"))}</p>`, alert: allergies.length > 0 },
+    { label: t("currentMeds"), html: `<p>${esc(meds.length ? meds.join(", ") : t("none"))}</p>` },
+    { label: t("emergency"), html: `<p>${esc(contact || t("none"))}</p>` }
   ];
   $("summary").innerHTML = tiles.map(x =>
     `<div class="tile${x.alert ? " alert" : ""}"><h3>${esc(x.label)}</h3>${x.html}</div>`).join("");
@@ -468,19 +558,25 @@ function renderIndex() {
     </ul></div>`).join("");
 }
 
-function fieldInput(sec, key, value, idx) {
+function inputHtml(sec, key, v, idx) {
   const id = idx == null ? `${sec}-${key}` : `${sec}-${idx}-${key}`;
-  const data = `data-sec="${sec}" data-key="${key}"${idx == null ? "" : ` data-idx="${idx}"`}`;
-  if (key === "generalNotes") return `<textarea class="cell" id="${id}" ${data}>${esc(value)}</textarea>`;
-  const type = DATE_KEYS.has(key) ? "date" : "text";
-  return `<input class="cell" type="${type}" id="${id}" ${data} value="${esc(value)}" aria-label="${esc(t(key))}">`;
-}
+  const data = `id="${id}" data-sec="${sec}" data-key="${key}"${idx == null ? "" : ` data-idx="${idx}"`} aria-label="${esc(t(key))}"`;
+  if (CHOICES[key]) {
+    const opts = CHOICES[key].map(c => `<option value="${esc(c)}"${c === v ? " selected" : ""}>${esc(I18N[lang]["opt_" + c] ?? c)}</option>`);
+    if (filled(v) && !CHOICES[key].includes(v)) opts.push(`<option value="${esc(v)}" selected>${esc(v)}</option>`);
+    return `<select class="cell" ${data}><option value="">${esc(t("choose"))}</option>${opts.join("")}</select>`;
+  }
+  if (!isText(key)) return `<input class="cell" type="${DATE_KEYS.has(key) ? "date" : "text"}" ${data} value="${esc(v)}">`;
 
-function cellView(key, v) {
-  if (!filled(v)) return "";
-  if (key === "severity") return `<span class="chip ${severityClass(v)}">${esc(v)}</span>`;
-  if (key === "status") return `<span class="chip ${statusClass(v)}">${esc(v)}</span>`;
-  return esc(v);
+  const obj = typeof v === "object" ? v : null;
+  const foreign = obj && obj.t.trim() && obj.l !== lang;
+  const value = !obj ? "" : obj.l === lang ? obj.t : obj.tr[lang]?.t ?? "";
+  const ph = foreign ? ` placeholder="${esc(obj.t)}"` : "";
+  const hint = foreign ? `<small class="orig" lang="${obj.l}">${esc(t("original"))} (${esc(LANG_NAME[obj.l])}): ${esc(obj.t)}</small>` : "";
+  const field = key === "generalNotes"
+    ? `<textarea class="cell" ${data}${ph}>${esc(value)}</textarea>`
+    : `<input class="cell" type="text" ${data}${ph} value="${esc(value)}">`;
+  return field + hint;
 }
 
 function renderSection(s) {
@@ -489,13 +585,13 @@ function renderSection(s) {
   if (s.type === "fields") {
     body = `<dl class="fields${s.wide ? " wide" : ""}">${s.keys.map(k => `
       <div class="field"><dt>${esc(t(k))}</dt>${editing
-        ? `<dd>${fieldInput(s.id, k, data[k] || "")}</dd>`
-        : `<dd class="${filled(data[k]) ? "" : "unset"}">${filled(data[k]) ? esc(data[k]) : esc(t("notSet"))}</dd>`}
+        ? `<dd>${inputHtml(s.id, k, data[k] ?? "")}</dd>`
+        : filled(data[k]) ? `<dd>${valueHtml(k, data[k])}</dd>` : `<dd class="unset">${esc(t("notSet"))}</dd>`}
       </div>`).join("")}</dl>`;
   } else {
     const head = `<tr>${s.keys.map(k => `<th>${esc(t(k))}</th>`).join("")}${editing ? "<th></th>" : ""}</tr>`;
     const rows = data.map((row, i) => `<tr>${s.keys.map(k =>
-      `<td>${editing ? fieldInput(s.id, k, row[k] || "", i) : cellView(k, row[k])}</td>`).join("")}
+      `<td>${editing ? inputHtml(s.id, k, row[k] ?? "", i) : valueHtml(k, row[k])}</td>`).join("")}
       ${editing ? `<td><button class="btn small danger" type="button" data-remove="${s.id}" data-idx="${i}">${esc(t("remove"))}</button></td>` : ""}</tr>`).join("");
     body = data.length
       ? `<div class="table-wrap"><table><thead>${head}</thead><tbody>${rows}</tbody></table></div>`
@@ -519,26 +615,123 @@ function renderAll() {
   renderBody();
 }
 
+// --- On-device translation (Chrome/Edge Translator API) ---
+
+const translators = new Map();
+let trState = { kind: "idle" };
+let runId = 0;
+
+function setTr(state) {
+  trState = state;
+  const box = $("tr-status");
+  const fill = s => s.replace("{n}", state.n).replace("{total}", state.total).replace("{p}", state.p);
+  const text = { working: "trWorking", download: "trDownloading", needClick: "trNeedClick", unsupported: "trUnsupported", failed: "trFailed" }[state.kind];
+  box.hidden = !text;
+  if (!text) return;
+  box.className = "tr-status" + (state.kind === "unsupported" || state.kind === "failed" ? " muted" : "");
+  box.innerHTML = `<span>${esc(fill(t(text)))}</span>` +
+    (state.kind === "needClick" ? ` <button class="btn small primary" type="button" id="tr-btn">${esc(t("trBtn"))}</button>` : "");
+}
+
+function pendingValues() {
+  const out = [];
+  const take = (key, v) => { if (isText(key) && v && typeof v === "object" && v.t.trim() && v.l !== lang && !v.tr[lang]) out.push(v); };
+  SECTIONS.forEach(s => {
+    if (s.type === "list") record[s.id].forEach(row => s.keys.forEach(k => take(k, row[k])));
+    else s.keys.forEach(k => take(k, record[s.id][k]));
+  });
+  return out;
+}
+
+async function getTranslator(from, to) {
+  const key = from + ">" + to;
+  if (translators.has(key)) return translators.get(key);
+  const opts = { sourceLanguage: TR_CODE[from], targetLanguage: TR_CODE[to] };
+  const avail = await Translator.availability(opts);
+  if (avail === "unavailable") throw new Error("unavailable");
+  if (avail !== "available" && !navigator.userActivation?.isActive) throw new Error("activation");
+  const tr = await Translator.create({
+    ...opts,
+    monitor(m) { m.addEventListener("downloadprogress", e => setTr({ kind: "download", p: Math.round(e.loaded * 100) })); }
+  });
+  translators.set(key, tr);
+  return tr;
+}
+
+async function translateAll() {
+  const id = ++runId;
+  const target = lang;
+  const items = pendingValues();
+  if (!items.length) return setTr({ kind: "idle" });
+  if (!("Translator" in self)) return setTr({ kind: "unsupported" });
+
+  const deadPairs = new Set();
+  let failed = 0, needClick = false;
+  setTr({ kind: "working", n: 0, total: items.length });
+  for (const [i, v] of items.entries()) {
+    if (id !== runId) return;
+    const pair = v.l + ">" + target;
+    try {
+      if (deadPairs.has(pair)) throw new Error("unavailable");
+      const tr = await getTranslator(v.l, target);
+      v.tr[target] = { t: await tr.translate(v.t), auto: true };
+    } catch (e) {
+      if (e.message === "activation") { needClick = true; break; }
+      deadPairs.add(pair);
+      failed++;
+    }
+    if (id === runId) setTr({ kind: "working", n: i + 1, total: items.length });
+  }
+  if (id !== runId) return;
+  save(false);
+  if (!editing) { renderMeta(); renderBody(); }
+  setTr(needClick ? { kind: "needClick" } : failed ? { kind: "failed" } : { kind: "idle" });
+}
+
+// --- Events ---
+
 $("langs").addEventListener("click", e => {
   const b = e.target.closest("button[data-lang]");
   if (!b) return;
   lang = b.dataset.lang;
   try { localStorage.setItem(LANG_STORE, JSON.stringify(lang)); } catch {}
   renderAll();
+  if (!editing) translateAll();
 });
 
 $("mode-btn").addEventListener("click", () => {
   editing = !editing;
   renderAll();
+  if (!editing) translateAll();
+});
+
+$("tr-status").addEventListener("click", e => {
+  if (e.target.id === "tr-btn") translateAll();
 });
 
 $("groups").addEventListener("input", e => {
   const el = e.target;
   if (!el.dataset.sec) return;
   const { sec, key, idx } = el.dataset;
-  if (idx == null) record[sec][key] = el.value;
-  else record[sec][idx][key] = el.value;
-  persist();
+  const target = idx == null ? record[sec] : record[sec][idx];
+  const text = el.value;
+
+  if (!isText(key)) {
+    target[key] = text;
+  } else {
+    const cur = target[key];
+    const typedLang = detectLang(text, lang);
+    const isOriginal = !cur || typeof cur !== "object" || !cur.t.trim() || cur.l === lang;
+    if (isOriginal || typedLang !== lang) {
+      target[key] = text.trim() ? { l: typedLang, t: text, tr: {} } : "";
+    } else if (text.trim()) {
+      cur.tr[lang] = { t: text, auto: false };
+    } else {
+      delete cur.tr[lang];
+    }
+  }
+  save();
+  renderMeta();
 });
 
 $("groups").addEventListener("click", e => {
@@ -547,13 +740,15 @@ $("groups").addEventListener("click", e => {
   if (add) {
     const sec = add.dataset.add;
     record[sec].push({});
-    persist();
+    save();
+    renderMeta();
     renderBody();
     const s = SECTIONS.find(x => x.id === sec);
     $(`${sec}-${record[sec].length - 1}-${s.keys[0]}`)?.focus();
   } else if (rm) {
     record[rm.dataset.remove].splice(Number(rm.dataset.idx), 1);
-    persist();
+    save();
+    renderMeta();
     renderBody();
   }
 });
@@ -573,8 +768,9 @@ $("restore-btn").addEventListener("click", () => {
     const data = JSON.parse($("import-box").value);
     if (!data || typeof data !== "object" || !data.profile) throw new Error();
     record = normalize(data);
-    persist();
+    save();
     renderAll();
+    translateAll();
     msg.className = "msg";
     msg.textContent = t("restored");
   } catch {
@@ -584,6 +780,7 @@ $("restore-btn").addEventListener("click", () => {
 });
 
 renderAll();
+translateAll();
 </script>
 </body>
 </html>

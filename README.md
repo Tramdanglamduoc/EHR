@@ -13,6 +13,7 @@ A multilingual personal health record built as a static website (HTML, CSS and J
   - **Medications and tests:** current and past medications, vaccinations, vital signs, lab results, vision/dental/hearing, implants and devices
   - **Life and care:** lifestyle, travel history, care wishes, notes for doctors
 - Edit mode to add, change and remove entries
+- Your entries are translated automatically when you switch language. Translation runs on your device (Chrome or Edge on a computer), and the original text is shown under each translation. Fixed choices like sex, blood type, severity and status always switch language.
 - Light and dark themes that follow your system setting
 - Backup and restore by copying the data as JSON
 
@@ -39,6 +40,7 @@ Hồ sơ sức khỏe cá nhân đa ngôn ngữ, là một trang web tĩnh (ch�
 - Tóm tắt khẩn cấp ở đầu trang: nhóm máu, dị ứng, thuốc đang dùng, người liên hệ khẩn cấp
 - 22 mục chia thành 4 nhóm: Về tôi, Tiền sử bệnh, Thuốc và xét nghiệm, Cuộc sống và chăm sóc
 - Chế độ chỉnh sửa để thêm, sửa và xóa thông tin
+- Dữ liệu bạn nhập tự động được dịch khi đổi ngôn ngữ. Việc dịch chạy ngay trên máy (Chrome hoặc Edge máy tính), và bản gốc luôn hiện bên dưới bản dịch. Các lựa chọn cố định như giới tính, nhóm máu, mức độ, tình trạng luôn đổi theo ngôn ngữ.
 - Giao diện sáng/tối theo cài đặt hệ thống
 - Sao lưu và khôi phục bằng cách sao chép dữ liệu dạng JSON
 
