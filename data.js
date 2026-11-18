@@ -1,8 +1,9 @@
 // Record data transcribed from vaccine books and cards. Bump SEED_VERSION when adding entries.
-const SEED_VERSION = 4;
+const SEED_VERSION = 5;
 const SEED = {
  "profile": {
   "fullName": "Trần Ngọc Bảo Trâm",
+  "dob": "2005-07-06",
   "sex": "female",
   "nationality": "Vietnamese",
   "languages": "Vietnamese, English"
