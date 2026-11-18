@@ -1,5 +1,5 @@
 // Record data transcribed from vaccine books and cards. Bump SEED_VERSION when adding entries.
-const SEED_VERSION = 3;
+const SEED_VERSION = 4;
 const SEED = {
  "profile": {
   "fullName": "Trần Ngọc Bảo Trâm",
@@ -2529,7 +2529,33 @@ const SEED = {
      }
     }
    },
-   "ageOnset": "48"
+   "ageOnset": "48",
+   "notes_f": {
+    "l": "en",
+    "t": "Born 1961",
+    "tr": {
+     "zh-Hant": {
+      "t": "1961 年出生",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "1961 年出生",
+      "auto": false
+     },
+     "ja": {
+      "t": "1961年生まれ",
+      "auto": false
+     },
+     "ko": {
+      "t": "1961년생",
+      "auto": false
+     },
+     "vi": {
+      "t": "Sinh năm 1961",
+      "auto": false
+     }
+    }
+   }
   },
   {
    "relation": {
@@ -2641,8 +2667,488 @@ const SEED = {
      "auto": false
     }
    }
+  },
+  "diet": {
+   "l": "en",
+   "t": "Irregular meal times; eats a mix of meat and vegetables, whatever is available",
+   "tr": {
+    "zh-Hant": {
+     "t": "用餐時間不固定；葷素都吃，有什麼吃什麼",
+     "auto": false
+    },
+    "zh-Hans": {
+     "t": "用餐时间不固定；荤素都吃，有什么吃什么",
+     "auto": false
+    },
+    "ja": {
+     "t": "食事の時間は不規則。肉も野菜も、あるものを何でも食べる",
+     "auto": false
+    },
+    "ko": {
+     "t": "식사 시간이 불규칙함. 고기와 채소를 가리지 않고 있는 대로 먹음",
+     "auto": false
+    },
+    "vi": {
+     "t": "Ăn không đúng giờ; ăn cả thịt lẫn rau, có gì ăn nấy",
+     "auto": false
+    }
+   }
+  },
+  "sleep": {
+   "l": "en",
+   "t": "No fixed sleep schedule, but sleeps well",
+   "tr": {
+    "zh-Hant": {
+     "t": "睡眠時間不固定，但睡得很好",
+     "auto": false
+    },
+    "zh-Hans": {
+     "t": "睡眠时间不固定，但睡得很好",
+     "auto": false
+    },
+    "ja": {
+     "t": "睡眠時間は不規則だが、よく眠れる",
+     "auto": false
+    },
+    "ko": {
+     "t": "수면 시간은 불규칙하지만 잘 잠",
+     "auto": false
+    },
+    "vi": {
+     "t": "Ngủ không cố định giờ nhưng ngủ ngon",
+     "auto": false
+    }
+   }
   }
  },
+ "travel": [
+  {
+   "country": {
+    "l": "en",
+    "t": "Thailand",
+    "tr": {
+     "zh-Hant": {
+      "t": "泰國",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "泰国",
+      "auto": false
+     },
+     "ja": {
+      "t": "タイ",
+      "auto": false
+     },
+     "ko": {
+      "t": "태국",
+      "auto": false
+     },
+     "vi": {
+      "t": "Thái Lan",
+      "auto": false
+     }
+    }
+   },
+   "date": "2012–2013 (grade 2)",
+   "notes_f": {
+    "l": "en",
+    "t": "Holiday · 5 days, 6 nights",
+    "tr": {
+     "zh-Hant": {
+      "t": "旅遊 · 5 天 6 夜",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "旅游 · 5 天 6 夜",
+      "auto": false
+     },
+     "ja": {
+      "t": "旅行 · 5日6泊",
+      "auto": false
+     },
+     "ko": {
+      "t": "여행 · 5일 6박",
+      "auto": false
+     },
+     "vi": {
+      "t": "Du lịch · 5 ngày 6 đêm",
+      "auto": false
+     }
+    }
+   }
+  },
+  {
+   "country": {
+    "l": "en",
+    "t": "Singapore",
+    "tr": {
+     "zh-Hant": {
+      "t": "新加坡",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "新加坡",
+      "auto": false
+     },
+     "ja": {
+      "t": "シンガポール",
+      "auto": false
+     },
+     "ko": {
+      "t": "싱가포르",
+      "auto": false
+     },
+     "vi": {
+      "t": "Singapore",
+      "auto": false
+     }
+    }
+   },
+   "date": "Summer 2022",
+   "notes_f": {
+    "l": "en",
+    "t": "Holiday · 3 days, 2 nights",
+    "tr": {
+     "zh-Hant": {
+      "t": "旅遊 · 3 天 2 夜",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "旅游 · 3 天 2 夜",
+      "auto": false
+     },
+     "ja": {
+      "t": "旅行 · 3日2泊",
+      "auto": false
+     },
+     "ko": {
+      "t": "여행 · 3일 2박",
+      "auto": false
+     },
+     "vi": {
+      "t": "Du lịch · 3 ngày 2 đêm",
+      "auto": false
+     }
+    }
+   }
+  },
+  {
+   "country": {
+    "l": "en",
+    "t": "Latvia — Riga",
+    "tr": {
+     "zh-Hant": {
+      "t": "拉脫維亞 — 里加",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "拉脱维亚 — 里加",
+      "auto": false
+     },
+     "ja": {
+      "t": "ラトビア — リガ",
+      "auto": false
+     },
+     "ko": {
+      "t": "라트비아 — 리가",
+      "auto": false
+     },
+     "vi": {
+      "t": "Latvia — Riga",
+      "auto": false
+     }
+    }
+   },
+   "date": "2023-09-25 → 2026-02-07",
+   "notes_f": {
+    "l": "en",
+    "t": "Studying at Riga Technical University; home to Vietnam every summer",
+    "tr": {
+     "zh-Hant": {
+      "t": "就讀里加工業大學；每年暑假回越南",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "就读里加工业大学；每年暑假回越南",
+      "auto": false
+     },
+     "ja": {
+      "t": "リガ工科大学に在学。毎年夏にベトナムへ帰省",
+      "auto": false
+     },
+     "ko": {
+      "t": "리가 공과대학교 재학, 매년 여름 베트남 귀국",
+      "auto": false
+     },
+     "vi": {
+      "t": "Học tại Đại học Kỹ thuật Riga; hè nào cũng về Việt Nam",
+      "auto": false
+     }
+    }
+   }
+  },
+  {
+   "country": {
+    "l": "en",
+    "t": "Poland — Poznań",
+    "tr": {
+     "zh-Hant": {
+      "t": "波蘭 — 波茲南",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "波兰 — 波兹南",
+      "auto": false
+     },
+     "ja": {
+      "t": "ポーランド — ポズナン",
+      "auto": false
+     },
+     "ko": {
+      "t": "폴란드 — 포즈난",
+      "auto": false
+     },
+     "vi": {
+      "t": "Ba Lan — Poznań",
+      "auto": false
+     }
+    }
+   },
+   "date": "2024-04-15 → 2024-04-18"
+  },
+  {
+   "country": {
+    "l": "en",
+    "t": "Vietnam — summer visit home",
+    "tr": {
+     "zh-Hant": {
+      "t": "越南 — 暑假返鄉",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "越南 — 暑假回乡",
+      "auto": false
+     },
+     "ja": {
+      "t": "ベトナム — 夏の帰省",
+      "auto": false
+     },
+     "ko": {
+      "t": "베트남 — 여름 귀국",
+      "auto": false
+     },
+     "vi": {
+      "t": "Việt Nam — về nhà dịp hè",
+      "auto": false
+     }
+    }
+   },
+   "date": "Summer 2024"
+  },
+  {
+   "country": {
+    "l": "en",
+    "t": "Vietnam — summer visit home",
+    "tr": {
+     "zh-Hant": {
+      "t": "越南 — 暑假返鄉",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "越南 — 暑假回乡",
+      "auto": false
+     },
+     "ja": {
+      "t": "ベトナム — 夏の帰省",
+      "auto": false
+     },
+     "ko": {
+      "t": "베트남 — 여름 귀국",
+      "auto": false
+     },
+     "vi": {
+      "t": "Việt Nam — về nhà dịp hè",
+      "auto": false
+     }
+    }
+   },
+   "date": "Summer 2025"
+  },
+  {
+   "country": {
+    "l": "en",
+    "t": "Cyprus — Limassol",
+    "tr": {
+     "zh-Hant": {
+      "t": "賽普勒斯 — 利馬索爾",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "塞浦路斯 — 利马索尔",
+      "auto": false
+     },
+     "ja": {
+      "t": "キプロス — リマソール",
+      "auto": false
+     },
+     "ko": {
+      "t": "키프로스 — 리마솔",
+      "auto": false
+     },
+     "vi": {
+      "t": "Síp — Limassol",
+      "auto": false
+     }
+    }
+   },
+   "date": "2026-02-08 → 2026-02-14"
+  },
+  {
+   "country": {
+    "l": "en",
+    "t": "Latvia — Riga",
+    "tr": {
+     "zh-Hant": {
+      "t": "拉脫維亞 — 里加",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "拉脱维亚 — 里加",
+      "auto": false
+     },
+     "ja": {
+      "t": "ラトビア — リガ",
+      "auto": false
+     },
+     "ko": {
+      "t": "라트비아 — 리가",
+      "auto": false
+     },
+     "vi": {
+      "t": "Latvia — Riga",
+      "auto": false
+     }
+    }
+   },
+   "date": "2026-02-15 → 2026-07-01"
+  },
+  {
+   "country": {
+    "l": "en",
+    "t": "Türkiye — Istanbul",
+    "tr": {
+     "zh-Hant": {
+      "t": "土耳其 — 伊斯坦堡",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "土耳其 — 伊斯坦布尔",
+      "auto": false
+     },
+     "ja": {
+      "t": "トルコ — イスタンブール",
+      "auto": false
+     },
+     "ko": {
+      "t": "튀르키예 — 이스탄불",
+      "auto": false
+     },
+     "vi": {
+      "t": "Thổ Nhĩ Kỳ — Istanbul",
+      "auto": false
+     }
+    }
+   },
+   "date": "2026-07-01 → 2026-08-01"
+  },
+  {
+   "country": {
+    "l": "en",
+    "t": "Latvia — Riga",
+    "tr": {
+     "zh-Hant": {
+      "t": "拉脫維亞 — 里加",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "拉脱维亚 — 里加",
+      "auto": false
+     },
+     "ja": {
+      "t": "ラトビア — リガ",
+      "auto": false
+     },
+     "ko": {
+      "t": "라트비아 — 리가",
+      "auto": false
+     },
+     "vi": {
+      "t": "Latvia — Riga",
+      "auto": false
+     }
+    }
+   },
+   "date": "2026-08-01 → 2026-08-07"
+  },
+  {
+   "country": {
+    "l": "en",
+    "t": "Vietnam — Ho Chi Minh City",
+    "tr": {
+     "zh-Hant": {
+      "t": "越南 — 胡志明市",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "越南 — 胡志明市",
+      "auto": false
+     },
+     "ja": {
+      "t": "ベトナム — ホーチミン市",
+      "auto": false
+     },
+     "ko": {
+      "t": "베트남 — 호찌민시",
+      "auto": false
+     },
+     "vi": {
+      "t": "Việt Nam — TP.HCM",
+      "auto": false
+     }
+    }
+   },
+   "date": "2026-08-07 → 2026-10-01"
+  },
+  {
+   "country": {
+    "l": "en",
+    "t": "Taiwan — New Taipei",
+    "tr": {
+     "zh-Hant": {
+      "t": "台灣 — 新北",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "台湾 — 新北",
+      "auto": false
+     },
+     "ja": {
+      "t": "台湾 — 新北",
+      "auto": false
+     },
+     "ko": {
+      "t": "대만 — 신베이",
+      "auto": false
+     },
+     "vi": {
+      "t": "Đài Loan — Tân Bắc",
+      "auto": false
+     }
+    }
+   },
+   "date": "2026-10-01 → now"
+  }
+ ],
  "notes": {
   "generalNotes": {
    "l": "en",

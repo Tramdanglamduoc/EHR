@@ -196,7 +196,6 @@ footer { color: var(--muted); font-size: 13px; margin-top: 22px; max-width: 70ch
         </div>
         <div class="backup-row">
           <button class="btn" id="export-btn" type="button"></button>
-          <span class="msg" id="t-export-note"></span>
         </div>
         <label for="import-box" class="msg" id="t-import"></label>
         <textarea id="import-box" spellcheck="false"></textarea>
@@ -231,7 +230,6 @@ empty|No entries yet|尚無資料|暂无数据|記録はまだありません|�
 notSet|Not set|未填寫|未填写|未記入|미입력|Chưa điền
 nka|No known allergies|無已知過敏|无已知过敏|既知のアレルギーなし|알려진 알레르기 없음|Không có dị ứng
 exportJs|Download data.js (to upload to GitHub)|下載 data.js（上傳到 GitHub）|下载 data.js（上传到 GitHub）|data.js をダウンロード（GitHub にアップロード）|data.js 다운로드 (GitHub에 업로드)|Tải data.js (để tải lên GitHub)
-exportNote|Women's health is left out of this file because the GitHub repo is public.|因 GitHub 儲存庫為公開，此檔案不包含婦女健康資料。|因 GitHub 仓库为公开，此文件不包含妇女健康数据。|GitHub リポジトリは公開のため、婦人科歴はこのファイルに含まれません。|GitHub 저장소가 공개되어 있어 여성 건강 정보는 이 파일에서 제외됩니다.|Mục sức khỏe phụ nữ không được đưa vào file này vì repo GitHub đang công khai.
 healthDone|Added {n} readings from Apple Health.|已從 Apple 健康加入 {n} 筆數據。|已从 Apple 健康添加 {n} 条数据。|Apple ヘルスケアから {n} 件のデータを追加しました。|Apple 건강에서 {n}개의 기록을 추가했습니다.|Đã thêm {n} chỉ số từ Apple Health.
 none|None recorded|無紀錄|无记录|記録なし|기록 없음|Chưa ghi nhận
 choose|Choose…|請選擇…|请选择…|選択…|선택…|Chọn…
@@ -267,7 +265,6 @@ surgeries|Surgical history|手術史|手术史|手術歴|수술 이력|Tiền s�
 hospitalizations|Hospital stays|住院紀錄|住院记录|入院歴|입원 이력|Lịch sử nhập viện
 family|Family history|家族病史|家族病史|家族歴|가족력|Tiền sử gia đình
 mental|Mental health|心理健康|心理健康|メンタルヘルス|정신 건강|Sức khỏe tâm thần
-womens|Women's health|婦女健康|妇女健康|婦人科歴|여성 건강|Sức khỏe phụ nữ
 currentMeds|Current medications|目前用藥|当前用药|現在の服薬|현재 복용 약물|Thuốc đang dùng
 pastMeds|Medication history|過去用藥|既往用药|過去の服薬歴|과거 복용 약물|Tiền sử dùng thuốc
 immunizations|Vaccinations|疫苗接種|疫苗接种|予防接種|예방접종|Tiêm chủng
@@ -309,11 +306,6 @@ date|Date|日期|日期|日付|날짜|Ngày
 hospital|Hospital|醫院|医院|病院|병원|Bệnh viện
 reason|Reason|原因|原因|理由|사유|Lý do
 ageOnset|Age at onset|發病年齡|发病年龄|発症年齢|발병 연령|Tuổi khởi phát
-menarche|Age at first period|初經年齡|初潮年龄|初経年齢|초경 연령|Tuổi có kinh lần đầu
-cycle|Cycle length (days)|週期長度（天）|周期长度（天）|月経周期（日）|월경 주기 (일)|Chu kỳ kinh (ngày)
-lastPeriod|Last period|最後一次月經|末次月经|最終月経|마지막 월경일|Kỳ kinh gần nhất
-pregnancies|Pregnancies|懷孕次數|妊娠次数|妊娠歴|임신 횟수|Số lần mang thai
-contraception|Contraception|避孕方式|避孕方式|避妊法|피임 방법|Biện pháp tránh thai
 drug|Medication|藥名|药名|薬剤名|약품명|Tên thuốc
 dose|Dose|劑量|剂量|用量|용량|Liều
 frequency|How often|頻率|频率|服用回数|복용 횟수|Tần suất
@@ -380,7 +372,6 @@ const SECTIONS = [
   { id: "hospitalizations", g: "gHistory", type: "list", keys: ["reason", "date", "hospital", "notes_f"] },
   { id: "family", g: "gHistory", type: "list", keys: ["relation", "condition", "ageOnset", "notes_f"] },
   { id: "mental", g: "gHistory", type: "list", keys: ["condition", "diagnosed", "status", "notes_f"] },
-  { id: "womens", g: "gHistory", type: "fields", keys: ["menarche", "cycle", "lastPeriod", "pregnancies", "contraception"] },
   { id: "currentMeds", g: "gTreatment", type: "list", keys: ["drug", "dose", "frequency", "reason", "since"] },
   { id: "pastMeds", g: "gTreatment", type: "list", keys: ["drug", "dose", "period", "reasonStopped"] },
   { id: "immunizations", g: "gTreatment", type: "list", keys: ["vaccine", "doseNo", "date", "notes_f"] },
@@ -394,7 +385,7 @@ const SECTIONS = [
   { id: "notes", g: "gLife", type: "fields", keys: ["generalNotes"], wide: true }
 ];
 const GROUPS = ["gIdentity", "gHistory", "gTreatment", "gLife"];
-const DATE_KEYS = new Set(["dob", "lastPeriod", "validUntil"]);
+const DATE_KEYS = new Set(["dob", "validUntil"]);
 const CHOICES = {
   sex: ["female", "male", "other"],
   bloodType: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
@@ -407,7 +398,7 @@ const CHOICES = {
 const CHIP = { mild: "ok", moderate: "warn", severe: "crit", lifeThreatening: "crit", active: "warn", resolved: "ok" };
 // Names, contact details, dates and numbers are kept exactly as typed.
 const KEEP = new Set(["fullName", "name", "phone", "email", "policyNo", "dob", "date", "diagnosed", "since",
-  "lastPeriod", "validUntil", "height", "weight", "cycle", "menarche", "pregnancies", "doseNo", "ageOnset", "value", "range"]);
+  "validUntil", "height", "weight", "doseNo", "ageOnset", "value", "range"]);
 const STORE = "phr-record-v1";
 const LANG_STORE = "phr-lang";
 
@@ -482,9 +473,15 @@ function withSeed(data) {
     if (!add) return;
     if (s.type === "list") {
       const cur = (Array.isArray(out[s.id]) ? out[s.id] : []).filter(row => s.keys.some(k => raw(row[k]).trim()));
-      const sig = row => s.keys.map(k => raw(row[k]).trim().toLowerCase()).join("|");
-      const seen = new Set(cur.map(sig));
-      out[s.id] = cur.concat(add.filter(row => !seen.has(sig(row))));
+      const idKeys = s.keys.filter((k, i) => i === 0 || KEEP.has(k));
+      const sig = row => idKeys.map(k => raw(row[k]).trim().toLowerCase()).join("|");
+      const bySig = new Map(cur.map(row => [sig(row), row]));
+      add.forEach(row => {
+        const hit = bySig.get(sig(row));
+        if (!hit) cur.push(row);
+        else s.keys.forEach(k => { if (!raw(hit[k]).trim() && row[k] != null) hit[k] = row[k]; });
+      });
+      out[s.id] = cur;
     } else {
       const cur = { ...(out[s.id] || {}) };
       Object.entries(add).forEach(([k, v]) => { if (!raw(cur[k]).trim()) cur[k] = v; });
@@ -546,7 +543,6 @@ function renderStatic() {
   $("t-import").textContent = t("importLabel");
   $("restore-btn").textContent = t("restore");
   $("export-btn").textContent = t("exportJs");
-  $("t-export-note").textContent = t("exportNote");
   $("t-privacy").textContent = t("privacy");
   $("mode-btn").textContent = editing ? t("done") : t("edit");
 }
@@ -816,7 +812,7 @@ $("restore-btn").addEventListener("click", () => {
 // Writes the current record as data.js so it can be committed to the repo and show up on every device.
 $("export-btn").addEventListener("click", () => {
   const out = {};
-  SECTIONS.forEach(s => { if (s.id !== "womens") out[s.id] = record[s.id]; });
+  SECTIONS.forEach(s => { out[s.id] = record[s.id]; });
   const text = "// Record data exported from the site. Bump SEED_VERSION when adding entries.\n" +
     `const SEED_VERSION = ${SEED_VERSION + 1};\nconst SEED = ${JSON.stringify(out, null, 1)};\n`;
   const a = document.createElement("a");
