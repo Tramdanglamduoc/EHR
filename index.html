@@ -194,6 +194,10 @@ footer { color: var(--muted); font-size: 13px; margin-top: 22px; max-width: 70ch
           <button class="btn" id="copy-btn" type="button"></button>
           <span class="msg" id="copy-msg"></span>
         </div>
+        <div class="backup-row">
+          <button class="btn" id="export-btn" type="button"></button>
+          <span class="msg" id="t-export-note"></span>
+        </div>
         <label for="import-box" class="msg" id="t-import"></label>
         <textarea id="import-box" spellcheck="false"></textarea>
         <div class="backup-row">
@@ -225,6 +229,10 @@ add|Add entry|新增一筆|添加一条|追加|항목 추가|Thêm mục
 remove|Remove|刪除|删除|削除|삭제|Xóa
 empty|No entries yet|尚無資料|暂无数据|記録はまだありません|아직 기록이 없습니다|Chưa có mục nào
 notSet|Not set|未填寫|未填写|未記入|미입력|Chưa điền
+nka|No known allergies|無已知過敏|无已知过敏|既知のアレルギーなし|알려진 알레르기 없음|Không có dị ứng
+exportJs|Download data.js (to upload to GitHub)|下載 data.js（上傳到 GitHub）|下载 data.js（上传到 GitHub）|data.js をダウンロード（GitHub にアップロード）|data.js 다운로드 (GitHub에 업로드)|Tải data.js (để tải lên GitHub)
+exportNote|Women's health is left out of this file because the GitHub repo is public.|因 GitHub 儲存庫為公開，此檔案不包含婦女健康資料。|因 GitHub 仓库为公开，此文件不包含妇女健康数据。|GitHub リポジトリは公開のため、婦人科歴はこのファイルに含まれません。|GitHub 저장소가 공개되어 있어 여성 건강 정보는 이 파일에서 제외됩니다.|Mục sức khỏe phụ nữ không được đưa vào file này vì repo GitHub đang công khai.
+healthDone|Added {n} readings from Apple Health.|已從 Apple 健康加入 {n} 筆數據。|已从 Apple 健康添加 {n} 条数据。|Apple ヘルスケアから {n} 件のデータを追加しました。|Apple 건강에서 {n}개의 기록을 추가했습니다.|Đã thêm {n} chỉ số từ Apple Health.
 none|None recorded|無紀錄|无记录|記録なし|기록 없음|Chưa ghi nhận
 choose|Choose…|請選擇…|请选择…|選択…|선택…|Chọn…
 original|Original|原文|原文|原文|원문|Bản gốc
@@ -281,7 +289,6 @@ height|Height (cm)|身高 (cm)|身高 (cm)|身長 (cm)|키 (cm)|Chiều cao (cm)
 weight|Weight (kg)|體重 (kg)|体重 (kg)|体重 (kg)|체중 (kg)|Cân nặng (kg)
 phone|Phone|電話|电话|電話番号|전화번호|Điện thoại
 email|Email|電子郵件|电子邮件|メール|이메일|Email
-address|Address|地址|地址|住所|주소|Địa chỉ
 name|Name|姓名|姓名|氏名|이름|Họ tên
 relation|Relationship|關係|关系|続柄|관계|Quan hệ
 specialty|Specialty|科別|科室|診療科|진료과|Chuyên khoa
@@ -363,7 +370,7 @@ ROWS.trim().split("\n").forEach(line => {
 });
 
 const SECTIONS = [
-  { id: "profile", g: "gIdentity", type: "fields", keys: ["fullName", "dob", "sex", "bloodType", "nationality", "languages", "height", "weight", "phone", "email", "address"] },
+  { id: "profile", g: "gIdentity", type: "fields", keys: ["fullName", "dob", "sex", "bloodType", "nationality", "languages", "height", "weight", "phone", "email"] },
   { id: "emergency", g: "gIdentity", type: "list", keys: ["name", "relation", "phone"] },
   { id: "providers", g: "gIdentity", type: "list", keys: ["name", "specialty", "clinic", "phone"] },
   { id: "insurance", g: "gIdentity", type: "fields", keys: ["insurer", "plan", "policyNo", "validUntil"] },
@@ -399,7 +406,7 @@ const CHOICES = {
 };
 const CHIP = { mild: "ok", moderate: "warn", severe: "crit", lifeThreatening: "crit", active: "warn", resolved: "ok" };
 // Names, contact details, dates and numbers are kept exactly as typed.
-const KEEP = new Set(["fullName", "name", "phone", "email", "address", "policyNo", "dob", "date", "diagnosed", "since",
+const KEEP = new Set(["fullName", "name", "phone", "email", "policyNo", "dob", "date", "diagnosed", "since",
   "lastPeriod", "validUntil", "height", "weight", "cycle", "menarche", "pregnancies", "doseNo", "ageOnset", "value", "range"]);
 const STORE = "phr-record-v1";
 const LANG_STORE = "phr-lang";
@@ -474,7 +481,7 @@ function withSeed(data) {
     const add = SEED[s.id];
     if (!add) return;
     if (s.type === "list") {
-      const cur = Array.isArray(out[s.id]) ? out[s.id] : [];
+      const cur = (Array.isArray(out[s.id]) ? out[s.id] : []).filter(row => s.keys.some(k => raw(row[k]).trim()));
       const sig = row => s.keys.map(k => raw(row[k]).trim().toLowerCase()).join("|");
       const seen = new Set(cur.map(sig));
       out[s.id] = cur.concat(add.filter(row => !seen.has(sig(row))));
@@ -538,6 +545,8 @@ function renderStatic() {
   $("copy-btn").textContent = t("copy");
   $("t-import").textContent = t("importLabel");
   $("restore-btn").textContent = t("restore");
+  $("export-btn").textContent = t("exportJs");
+  $("t-export-note").textContent = t("exportNote");
   $("t-privacy").textContent = t("privacy");
   $("mode-btn").textContent = editing ? t("done") : t("edit");
 }
@@ -561,7 +570,7 @@ function renderSummary() {
   const contact = c && [c.name, filled(c.relation) && `(${plain("relation", c.relation)})`, c.phone].filter(Boolean).join(" ");
   const tiles = [
     { label: t("bloodType"), html: `<p class="blood">${esc(record.profile.bloodType) || "—"}</p>` },
-    { label: t("allergies"), html: `<p>${esc(allergies.length ? allergies.join(", ") : t("none"))}</p>`, alert: allergies.length > 0 },
+    { label: t("allergies"), html: `<p>${esc(allergies.length ? allergies.join(", ") : t("nka"))}</p>`, alert: allergies.length > 0 },
     { label: t("currentMeds"), html: `<p>${esc(meds.length ? meds.join(", ") : t("none"))}</p>` },
     { label: t("emergency"), html: `<p>${esc(contact || t("none"))}</p>` }
   ];
@@ -620,7 +629,7 @@ function renderSection(s) {
       ${editing ? `<td><button class="btn small danger" type="button" data-remove="${s.id}" data-idx="${i}">${esc(t("remove"))}</button></td>` : ""}</tr>`).join("");
     body = data.length
       ? `<div class="table-wrap"><table><thead>${head}</thead><tbody>${rows}</tbody></table></div>`
-      : `<p class="empty">${esc(t("empty"))}</p>`;
+      : `<p class="empty">${esc(t(s.id === "allergies" ? "nka" : "empty"))}</p>`;
     if (editing) body += `<button class="btn small add-row" type="button" data-add="${s.id}">+ ${esc(t("add"))}</button>`;
   }
   return `<section class="panel" id="${s.id}">
@@ -804,8 +813,60 @@ $("restore-btn").addEventListener("click", () => {
   }
 });
 
+// Writes the current record as data.js so it can be committed to the repo and show up on every device.
+$("export-btn").addEventListener("click", () => {
+  const out = {};
+  SECTIONS.forEach(s => { if (s.id !== "womens") out[s.id] = record[s.id]; });
+  const text = "// Record data exported from the site. Bump SEED_VERSION when adding entries.\n" +
+    `const SEED_VERSION = ${SEED_VERSION + 1};\nconst SEED = ${JSON.stringify(out, null, 1)};\n`;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([text], { type: "text/javascript" }));
+  a.download = "data.js";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+// An iPhone Shortcut opens …/#health={"date":"2026-11-18","weight":"52","height":"160","Resting heart rate":"62 bpm"}
+function labelFor(key) {
+  return { l: "en", t: I18N.en[key], tr: Object.fromEntries(LANGS.slice(1).map(([c]) => [c, { t: I18N[c][key], auto: false }])) };
+}
+
+function importHealth() {
+  const m = location.hash.match(/^#health=(.+)$/);
+  if (!m) return 0;
+  history.replaceState(null, "", location.pathname + location.search);
+  let data;
+  try { data = JSON.parse(decodeURIComponent(m[1])); } catch { return 0; }
+  if (!data || typeof data !== "object") return 0;
+  const date = String(data.date || new Date().toISOString()).slice(0, 10);
+  let n = 0;
+  Object.entries(data).forEach(([k, v]) => {
+    const value = String(v ?? "").trim();
+    if (k === "date" || !value) return;
+    const known = { height: "height", weight: "weight" }[k.toLowerCase()];
+    if (known) record.profile[known] = value.replace(/[^\d.]/g, "") || value;
+    const measurement = known ? labelFor(known) : normValue("measurement", k);
+    const same = r => r.date === date && plain("measurement", r.measurement) === plain("measurement", measurement);
+    const row = record.vitals.find(same);
+    if (row) row.value = value;
+    else record.vitals.push({ date, measurement, value });
+    n++;
+  });
+  if (n) save();
+  return n;
+}
+
+const imported = importHealth();
 renderAll();
-translateAll();
+if (imported) { const b = $("tr-status"); b.hidden = false; b.className = "tr-status"; b.textContent = t("healthDone").replace("{n}", imported); }
+else translateAll();
+
+window.addEventListener("hashchange", () => {
+  const n = importHealth();
+  if (!n) return;
+  renderAll();
+  const b = $("tr-status"); b.hidden = false; b.className = "tr-status"; b.textContent = t("healthDone").replace("{n}", n);
+});
 </script>
 </body>
 </html>

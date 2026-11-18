@@ -1,5 +1,5 @@
 // Record data transcribed from vaccine books and cards. Bump SEED_VERSION when adding entries.
-const SEED_VERSION = 2;
+const SEED_VERSION = 3;
 const SEED = {
  "profile": {
   "fullName": "Trần Ngọc Bảo Trâm",
@@ -2193,6 +2193,456 @@ const SEED = {
    }
   }
  ],
+ "conditions": [
+  {
+   "condition": {
+    "l": "en",
+    "t": "Foot caught in bicycle wheel spokes; the wound became infected",
+    "tr": {
+     "zh-Hant": {
+      "t": "腳被捲入腳踏車輪輻，傷口感染",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "脚被卷入自行车轮辐，伤口感染",
+      "auto": false
+     },
+     "ja": {
+      "t": "自転車の車輪のスポークに足を巻き込まれ、傷が感染",
+      "auto": false
+     },
+     "ko": {
+      "t": "자전거 바퀴살에 발이 끼여 상처가 감염됨",
+      "auto": false
+     },
+     "vi": {
+      "t": "Kẹt chân vào căm xe đạp, vết thương bị nhiễm trùng",
+      "auto": false
+     }
+    }
+   },
+   "diagnosed": "2012-01-01",
+   "status": "resolved",
+   "notes_f": {
+    "l": "en",
+    "t": "lunar date: 8th of the 12th month, year Tân Mão · grade 1",
+    "tr": {
+     "zh-Hant": {
+      "t": "農曆辛卯年十二月初八 · 小學一年級",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "农历辛卯年腊月初八 · 小学一年级",
+      "auto": false
+     },
+     "ja": {
+      "t": "旧暦 辛卯年12月8日 · 小学1年生",
+      "auto": false
+     },
+     "ko": {
+      "t": "음력 신묘년 12월 8일 · 초등학교 1학년",
+      "auto": false
+     },
+     "vi": {
+      "t": "Âm lịch: 8 tháng Chạp năm Tân Mão · lớp 1",
+      "auto": false
+     }
+    }
+   }
+  }
+ ],
+ "surgeries": [
+  {
+   "procedure": {
+    "l": "en",
+    "t": "Foot surgery for an infected bicycle-spoke wound",
+    "tr": {
+     "zh-Hant": {
+      "t": "腳部手術（腳踏車輪輻傷口感染）",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "脚部手术（自行车轮辐伤口感染）",
+      "auto": false
+     },
+     "ja": {
+      "t": "足の手術（自転車スポーク外傷の感染）",
+      "auto": false
+     },
+     "ko": {
+      "t": "발 수술 (자전거 바퀴살 상처 감염)",
+      "auto": false
+     },
+     "vi": {
+      "t": "Mổ chân do vết thương kẹt căm xe đạp bị nhiễm trùng",
+      "auto": false
+     }
+    }
+   },
+   "date": "2012-01-08",
+   "notes_f": {
+    "l": "en",
+    "t": "lunar date: 15th of the 12th month, year Tân Mão · 3-day hospital stay",
+    "tr": {
+     "zh-Hant": {
+      "t": "農曆辛卯年十二月十五 · 住院 3 天",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "农历辛卯年腊月十五 · 住院 3 天",
+      "auto": false
+     },
+     "ja": {
+      "t": "旧暦 辛卯年12月15日 · 3日間入院",
+      "auto": false
+     },
+     "ko": {
+      "t": "음력 신묘년 12월 15일 · 3일 입원",
+      "auto": false
+     },
+     "vi": {
+      "t": "Âm lịch: 15 tháng Chạp năm Tân Mão · Nằm viện 3 ngày",
+      "auto": false
+     }
+    }
+   }
+  },
+  {
+   "procedure": {
+    "l": "en",
+    "t": "Trigger finger release (paediatric)",
+    "tr": {
+     "zh-Hant": {
+      "t": "板機指鬆解手術（兒童）",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "扳机指松解术（儿童）",
+      "auto": false
+     },
+     "ja": {
+      "t": "ばね指解離術（小児）",
+      "auto": false
+     },
+     "ko": {
+      "t": "방아쇠수지 유리술 (소아)",
+      "auto": false
+     },
+     "vi": {
+      "t": "Mổ ngón tay cò súng (trẻ em)",
+      "auto": false
+     }
+    }
+   },
+   "date": "2012-08-20",
+   "notes_f": {
+    "l": "en",
+    "t": "3-day hospital stay",
+    "tr": {
+     "zh-Hant": {
+      "t": "住院 3 天",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "住院 3 天",
+      "auto": false
+     },
+     "ja": {
+      "t": "3日間入院",
+      "auto": false
+     },
+     "ko": {
+      "t": "3일 입원",
+      "auto": false
+     },
+     "vi": {
+      "t": "Nằm viện 3 ngày",
+      "auto": false
+     }
+    }
+   }
+  }
+ ],
+ "hospitalizations": [
+  {
+   "reason": {
+    "l": "en",
+    "t": "Foot surgery for an infected bicycle-spoke wound",
+    "tr": {
+     "zh-Hant": {
+      "t": "腳部手術（腳踏車輪輻傷口感染）",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "脚部手术（自行车轮辐伤口感染）",
+      "auto": false
+     },
+     "ja": {
+      "t": "足の手術（自転車スポーク外傷の感染）",
+      "auto": false
+     },
+     "ko": {
+      "t": "발 수술 (자전거 바퀴살 상처 감염)",
+      "auto": false
+     },
+     "vi": {
+      "t": "Mổ chân do vết thương kẹt căm xe đạp bị nhiễm trùng",
+      "auto": false
+     }
+    }
+   },
+   "date": "2012-01-08",
+   "notes_f": {
+    "l": "en",
+    "t": "3 days",
+    "tr": {
+     "zh-Hant": {
+      "t": "3 天",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "3 天",
+      "auto": false
+     },
+     "ja": {
+      "t": "3日間",
+      "auto": false
+     },
+     "ko": {
+      "t": "3일",
+      "auto": false
+     },
+     "vi": {
+      "t": "3 ngày",
+      "auto": false
+     }
+    }
+   }
+  },
+  {
+   "reason": {
+    "l": "en",
+    "t": "Trigger finger release (paediatric)",
+    "tr": {
+     "zh-Hant": {
+      "t": "板機指鬆解手術（兒童）",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "扳机指松解术（儿童）",
+      "auto": false
+     },
+     "ja": {
+      "t": "ばね指解離術（小児）",
+      "auto": false
+     },
+     "ko": {
+      "t": "방아쇠수지 유리술 (소아)",
+      "auto": false
+     },
+     "vi": {
+      "t": "Mổ ngón tay cò súng (trẻ em)",
+      "auto": false
+     }
+    }
+   },
+   "date": "2012-08-20",
+   "notes_f": {
+    "l": "en",
+    "t": "3 days",
+    "tr": {
+     "zh-Hant": {
+      "t": "3 天",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "3 天",
+      "auto": false
+     },
+     "ja": {
+      "t": "3日間",
+      "auto": false
+     },
+     "ko": {
+      "t": "3일",
+      "auto": false
+     },
+     "vi": {
+      "t": "3 ngày",
+      "auto": false
+     }
+    }
+   }
+  }
+ ],
+ "family": [
+  {
+   "relation": {
+    "l": "en",
+    "t": "Father",
+    "tr": {
+     "zh-Hant": {
+      "t": "父親",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "父亲",
+      "auto": false
+     },
+     "ja": {
+      "t": "父",
+      "auto": false
+     },
+     "ko": {
+      "t": "아버지",
+      "auto": false
+     },
+     "vi": {
+      "t": "Bố",
+      "auto": false
+     }
+    }
+   },
+   "condition": {
+    "l": "en",
+    "t": "Type 2 diabetes",
+    "tr": {
+     "zh-Hant": {
+      "t": "第二型糖尿病",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "2型糖尿病",
+      "auto": false
+     },
+     "ja": {
+      "t": "2型糖尿病",
+      "auto": false
+     },
+     "ko": {
+      "t": "제2형 당뇨병",
+      "auto": false
+     },
+     "vi": {
+      "t": "Tiểu đường tuýp 2",
+      "auto": false
+     }
+    }
+   },
+   "ageOnset": "48"
+  },
+  {
+   "relation": {
+    "l": "en",
+    "t": "Maternal grandmother",
+    "tr": {
+     "zh-Hant": {
+      "t": "外婆",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "外婆",
+      "auto": false
+     },
+     "ja": {
+      "t": "母方の祖母",
+      "auto": false
+     },
+     "ko": {
+      "t": "외할머니",
+      "auto": false
+     },
+     "vi": {
+      "t": "Bà ngoại",
+      "auto": false
+     }
+    }
+   },
+   "condition": {
+    "l": "en",
+    "t": "Type 2 diabetes",
+    "tr": {
+     "zh-Hant": {
+      "t": "第二型糖尿病",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "2型糖尿病",
+      "auto": false
+     },
+     "ja": {
+      "t": "2型糖尿病",
+      "auto": false
+     },
+     "ko": {
+      "t": "제2형 당뇨병",
+      "auto": false
+     },
+     "vi": {
+      "t": "Tiểu đường tuýp 2",
+      "auto": false
+     }
+    }
+   },
+   "ageOnset": "52"
+  }
+ ],
+ "lifestyle": {
+  "occupation": {
+   "l": "en",
+   "t": "Researcher",
+   "tr": {
+    "zh-Hant": {
+     "t": "研究人員",
+     "auto": false
+    },
+    "zh-Hans": {
+     "t": "研究人员",
+     "auto": false
+    },
+    "ja": {
+     "t": "研究者",
+     "auto": false
+    },
+    "ko": {
+     "t": "연구원",
+     "auto": false
+    },
+    "vi": {
+     "t": "Nghiên cứu viên",
+     "auto": false
+    }
+   }
+  },
+  "smoking": "smokeNever",
+  "alcohol": "drinkNone",
+  "exercise": {
+   "l": "en",
+   "t": "Daily",
+   "tr": {
+    "zh-Hant": {
+     "t": "每天",
+     "auto": false
+    },
+    "zh-Hans": {
+     "t": "每天",
+     "auto": false
+    },
+    "ja": {
+     "t": "毎日",
+     "auto": false
+    },
+    "ko": {
+     "t": "매일",
+     "auto": false
+    },
+    "vi": {
+     "t": "Hằng ngày",
+     "auto": false
+    }
+   }
+  }
+ },
  "notes": {
   "generalNotes": {
    "l": "en",
