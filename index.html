@@ -115,6 +115,7 @@ table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th { text-align: left; font-weight: 500; font-size: 12.5px; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
 td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; overflow-wrap: anywhere; }
 tr:last-child td { border-bottom: 0; }
+td.nowrap { white-space: nowrap; }
 .empty { color: var(--muted); font-style: italic; margin: 4px 0; }
 .chip { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 12.5px; background: var(--soft); }
 .chip.crit { background: var(--crit-soft); color: var(--crit); }
@@ -205,6 +206,7 @@ footer { color: var(--muted); font-size: 13px; margin-top: 22px; max-width: 70ch
   </main>
 </div>
 
+<script src="data.js"></script>
 <script>
 const LANGS = [
   ["en", "English"], ["zh-Hant", "繁體中文"], ["zh-Hans", "简体中文"],
@@ -453,7 +455,7 @@ function normRow(keys, row) {
 }
 
 function normalize(data) {
-  const r = { updated: data.updated || null };
+  const r = { updated: data.updated || null, seed: data.seed || 0 };
   SECTIONS.forEach(s => {
     r[s.id] = s.type === "list"
       ? (Array.isArray(data[s.id]) ? data[s.id] : []).map(row => normRow(s.keys, row))
@@ -462,10 +464,33 @@ function normalize(data) {
   return r;
 }
 
-const SAMPLE = {
-  profile: { fullName: "Trần Ngọc Bảo Trâm", sex: "female", nationality: "Vietnamese", languages: "Vietnamese, English" }
-};
-let record = normalize(load(STORE, SAMPLE));
+// Adds SEED entries the browser copy doesn't have yet; never overwrites what was typed in.
+function withSeed(data) {
+  if (!data) return { ...SEED, seed: SEED_VERSION };
+  if ((data.seed || 0) >= SEED_VERSION) return data;
+  const out = { ...data, seed: SEED_VERSION };
+  const raw = v => v && typeof v === "object" ? v.t : String(v ?? "");
+  SECTIONS.forEach(s => {
+    const add = SEED[s.id];
+    if (!add) return;
+    if (s.type === "list") {
+      const cur = Array.isArray(out[s.id]) ? out[s.id] : [];
+      const sig = row => s.keys.map(k => raw(row[k]).trim().toLowerCase()).join("|");
+      const seen = new Set(cur.map(sig));
+      out[s.id] = cur.concat(add.filter(row => !seen.has(sig(row))));
+    } else {
+      const cur = { ...(out[s.id] || {}) };
+      Object.entries(add).forEach(([k, v]) => { if (!raw(cur[k]).trim()) cur[k] = v; });
+      out[s.id] = cur;
+    }
+  });
+  return out;
+}
+
+const stored = load(STORE, null);
+let record = normalize(withSeed(stored));
+record.seed = SEED_VERSION;
+if (!stored || (stored.seed || 0) < SEED_VERSION) save(false);
 let editing = false;
 
 function save(touch = true) {
@@ -591,7 +616,7 @@ function renderSection(s) {
   } else {
     const head = `<tr>${s.keys.map(k => `<th>${esc(t(k))}</th>`).join("")}${editing ? "<th></th>" : ""}</tr>`;
     const rows = data.map((row, i) => `<tr>${s.keys.map(k =>
-      `<td>${editing ? inputHtml(s.id, k, row[k] ?? "", i) : valueHtml(k, row[k])}</td>`).join("")}
+      `<td${k === "date" && !editing ? ' class="nowrap"' : ""}>${editing ? inputHtml(s.id, k, row[k] ?? "", i) : valueHtml(k, row[k])}</td>`).join("")}
       ${editing ? `<td><button class="btn small danger" type="button" data-remove="${s.id}" data-idx="${i}">${esc(t("remove"))}</button></td>` : ""}</tr>`).join("");
     body = data.length
       ? `<div class="table-wrap"><table><thead>${head}</thead><tbody>${rows}</tbody></table></div>`
