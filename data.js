@@ -1,5 +1,5 @@
 // Record data transcribed from vaccine books and cards. Bump SEED_VERSION when adding entries.
-const SEED_VERSION = 6;
+const SEED_VERSION = 7;
 const SEED = {
  "profile": {
   "fullName": "Trần Ngọc Bảo Trâm",
@@ -3362,6 +3362,32 @@ const SEED = {
      },
      "vi": {
       "t": "20 mg",
+      "auto": false
+     }
+    }
+   },
+   "frequency": {
+    "l": "en",
+    "t": "3 times a day, 1 tablet each time",
+    "tr": {
+     "zh-Hant": {
+      "t": "每日 3 次，每次 1 錠",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "每日 3 次，每次 1 片",
+      "auto": false
+     },
+     "ja": {
+      "t": "1日3回、1回1錠",
+      "auto": false
+     },
+     "ko": {
+      "t": "하루 3회, 1회 1정",
+      "auto": false
+     },
+     "vi": {
+      "t": "Ngày 3 lần, mỗi lần 1 viên",
       "auto": false
      }
     }
