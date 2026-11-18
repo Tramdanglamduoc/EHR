@@ -1,5 +1,5 @@
 // Record data transcribed from vaccine books and cards. Bump SEED_VERSION when adding entries.
-const SEED_VERSION = 5;
+const SEED_VERSION = 6;
 const SEED = {
  "profile": {
   "fullName": "Trần Ngọc Bảo Trâm",
@@ -2226,26 +2226,26 @@ const SEED = {
    "status": "resolved",
    "notes_f": {
     "l": "en",
-    "t": "lunar date: 8th of the 12th month, year Tân Mão · grade 1",
+    "t": "Grade 1",
     "tr": {
      "zh-Hant": {
-      "t": "農曆辛卯年十二月初八 · 小學一年級",
+      "t": "小學一年級",
       "auto": false
      },
      "zh-Hans": {
-      "t": "农历辛卯年腊月初八 · 小学一年级",
+      "t": "小学一年级",
       "auto": false
      },
      "ja": {
-      "t": "旧暦 辛卯年12月8日 · 小学1年生",
+      "t": "小学1年生",
       "auto": false
      },
      "ko": {
-      "t": "음력 신묘년 12월 8일 · 초등학교 1학년",
+      "t": "초등학교 1학년",
       "auto": false
      },
      "vi": {
-      "t": "Âm lịch: 8 tháng Chạp năm Tân Mão · lớp 1",
+      "t": "Lớp 1",
       "auto": false
      }
     }
@@ -2281,28 +2281,54 @@ const SEED = {
     }
    },
    "date": "2012-01-08",
-   "notes_f": {
+   "hospital": {
     "l": "en",
-    "t": "lunar date: 15th of the 12th month, year Tân Mão · 3-day hospital stay",
+    "t": "Hospital for Traumatology and Orthopaedics",
     "tr": {
      "zh-Hant": {
-      "t": "農曆辛卯年十二月十五 · 住院 3 天",
+      "t": "創傷骨科中心",
       "auto": false
      },
      "zh-Hans": {
-      "t": "农历辛卯年腊月十五 · 住院 3 天",
+      "t": "创伤骨科中心",
       "auto": false
      },
      "ja": {
-      "t": "旧暦 辛卯年12月15日 · 3日間入院",
+      "t": "外傷整形外科センター",
       "auto": false
      },
      "ko": {
-      "t": "음력 신묘년 12월 15일 · 3일 입원",
+      "t": "외상정형외과센터",
       "auto": false
      },
      "vi": {
-      "t": "Âm lịch: 15 tháng Chạp năm Tân Mão · Nằm viện 3 ngày",
+      "t": "Trung tâm Chấn thương Chỉnh hình",
+      "auto": false
+     }
+    }
+   },
+   "notes_f": {
+    "l": "en",
+    "t": "3-day hospital stay",
+    "tr": {
+     "zh-Hant": {
+      "t": "住院 3 天",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "住院 3 天",
+      "auto": false
+     },
+     "ja": {
+      "t": "3日間入院",
+      "auto": false
+     },
+     "ko": {
+      "t": "3일 입원",
+      "auto": false
+     },
+     "vi": {
+      "t": "Nằm viện 3 ngày",
       "auto": false
      }
     }
@@ -2336,6 +2362,32 @@ const SEED = {
     }
    },
    "date": "2012-08-20",
+   "hospital": {
+    "l": "en",
+    "t": "Hospital for Traumatology and Orthopaedics",
+    "tr": {
+     "zh-Hant": {
+      "t": "創傷骨科中心",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "创伤骨科中心",
+      "auto": false
+     },
+     "ja": {
+      "t": "外傷整形外科センター",
+      "auto": false
+     },
+     "ko": {
+      "t": "외상정형외과센터",
+      "auto": false
+     },
+     "vi": {
+      "t": "Trung tâm Chấn thương Chỉnh hình",
+      "auto": false
+     }
+    }
+   },
    "notes_f": {
     "l": "en",
     "t": "3-day hospital stay",
@@ -2393,6 +2445,32 @@ const SEED = {
     }
    },
    "date": "2012-01-08",
+   "hospital": {
+    "l": "en",
+    "t": "Hospital for Traumatology and Orthopaedics",
+    "tr": {
+     "zh-Hant": {
+      "t": "創傷骨科中心",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "创伤骨科中心",
+      "auto": false
+     },
+     "ja": {
+      "t": "外傷整形外科センター",
+      "auto": false
+     },
+     "ko": {
+      "t": "외상정형외과센터",
+      "auto": false
+     },
+     "vi": {
+      "t": "Trung tâm Chấn thương Chỉnh hình",
+      "auto": false
+     }
+    }
+   },
    "notes_f": {
     "l": "en",
     "t": "3 days",
@@ -2448,6 +2526,32 @@ const SEED = {
     }
    },
    "date": "2012-08-20",
+   "hospital": {
+    "l": "en",
+    "t": "Hospital for Traumatology and Orthopaedics",
+    "tr": {
+     "zh-Hant": {
+      "t": "創傷骨科中心",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "创伤骨科中心",
+      "auto": false
+     },
+     "ja": {
+      "t": "外傷整形外科センター",
+      "auto": false
+     },
+     "ko": {
+      "t": "외상정형외과센터",
+      "auto": false
+     },
+     "vi": {
+      "t": "Trung tâm Chấn thương Chỉnh hình",
+      "auto": false
+     }
+    }
+   },
    "notes_f": {
     "l": "en",
     "t": "3 days",
@@ -3148,6 +3252,147 @@ const SEED = {
     }
    },
    "date": "2026-10-01 → now"
+  }
+ ],
+ "mental": [
+  {
+   "condition": {
+    "l": "en",
+    "t": "Mood disorder",
+    "tr": {
+     "zh-Hant": {
+      "t": "情緒障礙",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "情绪障碍",
+      "auto": false
+     },
+     "ja": {
+      "t": "気分障害",
+      "auto": false
+     },
+     "ko": {
+      "t": "기분장애",
+      "auto": false
+     },
+     "vi": {
+      "t": "Rối loạn khí sắc",
+      "auto": false
+     }
+    }
+   },
+   "diagnosed": "2026-03",
+   "status": "active",
+   "notes_f": {
+    "l": "en",
+    "t": "Treated with Flutonin (fluoxetine)",
+    "tr": {
+     "zh-Hant": {
+      "t": "以 Flutonin（氟西汀）治療",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "以 Flutonin（氟西汀）治疗",
+      "auto": false
+     },
+     "ja": {
+      "t": "Flutonin（フルオキセチン）で治療中",
+      "auto": false
+     },
+     "ko": {
+      "t": "Flutonin(플루옥세틴)으로 치료 중",
+      "auto": false
+     },
+     "vi": {
+      "t": "Điều trị bằng Flutonin (fluoxetine)",
+      "auto": false
+     }
+    }
+   }
+  }
+ ],
+ "currentMeds": [
+  {
+   "drug": {
+    "l": "en",
+    "t": "Flutonin (fluoxetine)",
+    "tr": {
+     "zh-Hant": {
+      "t": "Flutonin（氟西汀）",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "Flutonin（氟西汀）",
+      "auto": false
+     },
+     "ja": {
+      "t": "Flutonin（フルオキセチン）",
+      "auto": false
+     },
+     "ko": {
+      "t": "Flutonin (플루옥세틴)",
+      "auto": false
+     },
+     "vi": {
+      "t": "Flutonin (fluoxetine)",
+      "auto": false
+     }
+    }
+   },
+   "dose": {
+    "l": "en",
+    "t": "20 mg",
+    "tr": {
+     "zh-Hant": {
+      "t": "20 mg",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "20 mg",
+      "auto": false
+     },
+     "ja": {
+      "t": "20 mg",
+      "auto": false
+     },
+     "ko": {
+      "t": "20 mg",
+      "auto": false
+     },
+     "vi": {
+      "t": "20 mg",
+      "auto": false
+     }
+    }
+   },
+   "reason": {
+    "l": "en",
+    "t": "Mood disorder",
+    "tr": {
+     "zh-Hant": {
+      "t": "情緒障礙",
+      "auto": false
+     },
+     "zh-Hans": {
+      "t": "情绪障碍",
+      "auto": false
+     },
+     "ja": {
+      "t": "気分障害",
+      "auto": false
+     },
+     "ko": {
+      "t": "기분장애",
+      "auto": false
+     },
+     "vi": {
+      "t": "Rối loạn khí sắc",
+      "auto": false
+     }
+    }
+   },
+   "since": "2026-03"
   }
  ],
  "notes": {

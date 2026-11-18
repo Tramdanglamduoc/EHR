@@ -462,7 +462,11 @@ function normalize(data) {
   return r;
 }
 
-// Adds SEED entries the browser copy doesn't have yet; never overwrites what was typed in.
+// Text written by an earlier SEED carries hand-made translations for every language; typed text doesn't.
+const fromSeed = v => !!v && typeof v === "object" && v.tr && Object.keys(v.tr).length === LANGS.length - 1 &&
+  Object.values(v.tr).every(x => x && x.auto === false);
+
+// Adds SEED entries the browser copy doesn't have yet and refreshes text an earlier SEED wrote; never overwrites what was typed in.
 function withSeed(data) {
   if (!data) return { ...SEED, seed: SEED_VERSION };
   if ((data.seed || 0) >= SEED_VERSION) return data;
@@ -479,7 +483,7 @@ function withSeed(data) {
       add.forEach(row => {
         const hit = bySig.get(sig(row));
         if (!hit) cur.push(row);
-        else s.keys.forEach(k => { if (!raw(hit[k]).trim() && row[k] != null) hit[k] = row[k]; });
+        else s.keys.forEach(k => { if (row[k] != null && (!raw(hit[k]).trim() || fromSeed(hit[k]))) hit[k] = row[k]; });
       });
       out[s.id] = cur;
     } else {
